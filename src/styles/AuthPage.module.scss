@@ -1,0 +1,123 @@
+.authContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 40px 20px;
+}
+
+.authForm {
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+    background-color: #111122;
+    border: 1px solid #2a2a3e;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.authForm h1 {
+    color: var(--primary-color);
+    margin-bottom: 30px;
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+.authForm form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.authForm input {
+    width: 100%;
+    padding: 15px;
+    background-color: #2a2a3e;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 1rem;
+}
+
+.authForm button {
+    padding: 15px 30px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-orbitron);
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-size: 1.1rem;
+    font-weight: 700;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.error {
+    margin-top: 20px;
+    color: #ff4d4d;
+    font-size: 0.9rem;
+}
+
+/* === СТИЛІ ДЛЯ СПИСКУ ЗАМОВЛЕНЬ === */
+
+.ordersTable {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orderCard {
+  background-color: #1c1c2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.orderCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #2a2a3e;
+  font-size: 1.2rem;
+}
+
+.status {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.orderCard p {
+  margin-bottom: 8px;
+}
+
+.orderItems {
+  margin-top: 15px;
+  ul {
+    list-style-type: none;
+    padding-left: 15px;
+  }
+  li {
+    padding: 4px 0;
+    color: var(--text-secondary-color);
+  }
+}
+
+.orderDate {
+    text-align: right;
+    font-size: 0.8em;
+    color: #777;
+    margin-top: 15px;
+}

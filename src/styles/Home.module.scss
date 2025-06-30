@@ -1,0 +1,65 @@
+/* Стилі для головного екрана (Hero) */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 20px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+
+    /* Тут буде фонове зображення. Поки що просто темний фон */
+    background-color: #000;
+}
+
+/* Напівпрозорий шар для кращої читабельності тексту */
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.heroContent {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.heroTitle {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    /* Адаптивний розмір шрифту */
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.heroSubtitle {
+    font-size: clamp(1rem, 4vw, 1.25rem);
+    /* Адаптивний розмір шрифту */
+    color: var(--text-secondary-color);
+    margin-bottom: 40px;
+}
+
+.ctaButton {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-family: var(--font-orbitron), sans-serif;
+    font-weight: 700;
+    font-size: clamp(1rem, 3vw, 1.1rem);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.ctaButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}

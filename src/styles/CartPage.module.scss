@@ -1,0 +1,150 @@
+.cartSection {
+    padding: 80px 20px;
+    min-height: 70vh;
+}
+
+.cartContainer {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pageTitle {
+    font-size: 2.8rem;
+        color: var(--primary-color);
+        margin-bottom: 50px;
+}
+
+.cartItems {
+    border-top: 1px solid #2a2a3e;
+    margin-top: 30px;
+}
+
+.cartItem {
+    display: grid;
+    grid-template-columns: 80px 3fr 1.5fr 1fr 0.5fr;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #2a2a3e;
+}
+
+.itemImage img {
+    border-radius: 8px;
+}
+
+.itemDetails h4 {
+    font-size: 1.2rem;
+    margin: 0 0 5px 0;
+}
+
+.itemQuantity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Темний фон, як у карток */
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.itemTotal {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.itemRemove button {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.cartSummary {
+    margin-top: 40px;
+    display: flex;
+    /* Вмикаємо Flexbox */
+    flex-direction: column;
+    /* Розташовуємо елементи один під одним */
+    align-items: flex-end;
+    /* Вирівнюємо по правому краю */
+    gap: 20px;
+    /* Додаємо відстань 20px між сумою та кнопкою */
+}
+
+.cartSummary h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin: 0;
+    /* Прибираємо стандартний відступ, щоб gap працював чисто */
+}
+
+.ctaButton {
+        color: var(--primary-color);
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: 2px solid var(--primary-color);
+            text-decoration: none;
+            font-family: var(--font-orbitron);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        
+            &:hover {
+                background-color: var(--primary-color);
+                color: var(--background-color);
+                box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+
+.emptyCart {
+    text-align: center;
+    padding: 80px 20px;
+    /* Зробимо трохи більші відступи */
+    display: flex;
+    flex-direction: column;
+    /* Розташовуємо елементи один під одним */
+    align-items: center;
+    /* Центруємо по горизонталі */
+    gap: 25px;
+    /* <- Це ключ! Додаємо відстань у 25px між елементами */
+}
+
+.emptyCart h2 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+}
+
+.emptyCart p {
+    font-size: 1.1rem;
+    color: var(--text-secondary-color);
+}
+
+.itemQuantity span {
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 20px;
+    /* Щоб цифра не стрибала при зміні з 9 на 10 */
+    text-align: center;
+}
+
+.itemQuantity button {
+    background-color: #2a2a3e;
+    /* Фон як у секцій */
+    border: none;
+    color: var(--primary-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    font-size: 1.5rem;
+    line-height: 1;
+    /* Для кращого центрування +/- */
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+
+    &:hover {
+        background-color: var(--primary-color);
+        color: var(--background-color);
+    }
+}

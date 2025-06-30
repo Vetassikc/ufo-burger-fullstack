@@ -1,0 +1,89 @@
+.featuredSection {
+    padding: 80px 20px;
+    background-color: var(--background-color);
+}
+
+.featuredContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.8rem;
+    color: var(--primary-color);
+    margin-bottom: 50px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.card {
+    background-color: #111122;
+    border-radius: 15px;
+    overflow: hidden;
+    /* Ховаємо все, що виходить за межі картки */
+    border: 1px solid #2a2a3e;
+    text-align: left;
+    transition: transform 0.3s, box-shadow 0.3s;
+
+    &:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+    }
+}
+
+.cardImagePlaceholder {
+    height: 200px;
+    background-color: #2a2a3e;
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    padding: 20px 20px 10px 20px;
+}
+
+.cardDescription {
+    color: var(--text-secondary-color);
+    padding: 0 20px;
+    flex-grow: 1;
+    /* Це для майбутнього, якщо картки будуть різної висоти */
+}
+
+.cardPrice {
+    font-family: var(--font-orbitron);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    padding: 20px;
+    text-align: right;
+}
+
+.ctaContainer {
+    text-align: center;
+}
+
+.ctaButton {
+    background-color: transparent;
+    color: var(--primary-color);
+    padding: 15px 40px;
+    border-radius: 50px;
+    border: 2px solid var(--primary-color);
+    text-decoration: none;
+    font-family: var(--font-orbitron);
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+
+    &:hover {
+        background-color: var(--primary-color);
+        color: var(--background-color);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+        cursor: pointer;
+    }
+}

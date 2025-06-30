@@ -1,0 +1,148 @@
+.loading {
+    font-size: 1.2rem;
+    color: var(--text-secondary-color);
+}
+
+.menuTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+
+    th,
+    td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #2a2a3e;
+    }
+
+    th {
+        background-color: #1c1c2e;
+        color: var(--primary-color);
+    }
+
+    td {
+        color: var(--text-secondary-color);
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.editBtn,
+.deleteBtn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.editBtn {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.deleteBtn {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Стилі для хедера сторінки та кнопки "Додати" */
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.addBtn {
+    background-color: #22c55e;
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #16a34a;
+    }
+}
+
+/* Стилі для модального вікна форми */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: #1c1c2e;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+
+    h2 {
+        margin-top: 0;
+        color: var(--primary-color);
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    input,
+    textarea,
+    select {
+        width: 100%;
+        padding: 12px;
+        background-color: #2a2a3e;
+        border: 1px solid #555;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 1rem;
+    }
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.saveBtn,
+.cancelBtn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.saveBtn {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+.cancelBtn {
+    background-color: #555;
+    color: white;
+}

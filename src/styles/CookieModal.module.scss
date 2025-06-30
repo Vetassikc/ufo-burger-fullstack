@@ -1,0 +1,97 @@
+/* === СТИЛІ ДЛЯ COOKIE MODAL === */
+
+/* Стиль для темного фону (оверлей), який покриває всю сторінку */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    /* Напівпрозорий чорний */
+    z-index: 2000;
+    /* Має бути поверх інших елементів */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Стиль для самого спливаючого вікна */
+.modalContent {
+    background-color: #111122;
+    /* Фон, як у футері */
+    padding: 30px 40px;
+    border-radius: 15px;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+    position: relative;
+    /* Для позиціонування кнопки закриття */
+}
+
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.modalContent h3 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.modalContent p {
+    color: var(--text-secondary-color);
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+/* Стилі для групи кнопок */
+.cookieBtnGroup {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    /* Для мобільних пристроїв */
+}
+
+.cookieBtn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-orbitron);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-weight: 700;
+}
+
+.cookieBtn:hover {
+    transform: scale(1.05);
+}
+
+/* Стиль для другорядних кнопок */
+.cookieBtn.secondary {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.cookieBtn.secondary:hover {
+    background-color: rgba(255, 215, 0, 0.1);
+}

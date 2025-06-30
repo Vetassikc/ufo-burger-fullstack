@@ -1,0 +1,113 @@
+.menuSection {
+    padding: 80px 20px;
+}
+
+.menuContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pageTitle {
+    text-align: center;
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.pageIntro {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 60px auto;
+    font-size: 1.1em;
+    color: var(--text-secondary-color);
+}
+
+.categoryTitle {
+    font-size: 2.5rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+/* Використовуємо ті ж стилі карток, що й на головній */
+.card {
+    background-color: #111122;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid #2a2a3e;
+    display: flex;
+    flex-direction: column;
+}
+
+.cardImage {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    /* Фіксована висота для зображення */
+}
+
+.cardImagePlaceholder {
+    height: 200px;
+    background-color: #2a2a3e;
+}
+
+.cardContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.cardDescription {
+    color: var(--text-secondary-color);
+    flex-grow: 1;
+    margin-bottom: 15px;
+}
+
+.cardPrice {
+    font-family: var(--font-orbitron);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: right;
+    margin-top: auto;
+    /* Притискає ціну до низу картки */
+    padding: 0; // Заберіть старий педдінг
+    margin: 0;
+}
+
+.addToCartBtn {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-family: var(--font-orbitron);
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}

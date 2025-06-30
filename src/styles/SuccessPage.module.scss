@@ -1,0 +1,39 @@
+.successContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 70vh;
+    /* Займає значну частину екрану по висоті */
+    padding: 40px 20px;
+}
+
+.successContainer h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.successContainer p {
+    font-size: 1.2rem;
+    color: var(--text-secondary-color);
+    margin-bottom: 40px;
+}
+
+.ctaButton {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    padding: 15px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: var(--font-orbitron);
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.ctaButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}

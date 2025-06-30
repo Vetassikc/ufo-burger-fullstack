@@ -1,0 +1,48 @@
+.testimonialsSection {
+    padding: 80px 20px;
+    background-color: var(--background-color); // Використовуємо основний фон
+}
+
+.testimonialsContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.8rem;
+    color: var(--primary-color);
+    margin-bottom: 50px;
+}
+
+.cardsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background-color: #111122; // Фон картки, як у футері
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #2a2a3e;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.text {
+    color: var(--text-secondary-color);
+    font-style: italic;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.author {
+    color: var(--text-color);
+    font-weight: 700;
+    text-align: right;
+    font-style: normal;
+}

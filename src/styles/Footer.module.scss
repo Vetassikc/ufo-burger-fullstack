@@ -1,0 +1,50 @@
+.mainFooter {
+    background-color: #111122; // Трохи світліший за фон
+    padding: 50px 20px;
+    margin-top: 50px; // Відступ від основного контенту
+    border-top: 1px solid var(--primary-color);
+}
+
+.footerContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.footerColumn h4 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-family: var(--font-orbitron);
+}
+
+.footerLogo {
+    font-family: var(--font-orbitron);
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.footerColumn p {
+    color: var(--text-secondary-color);
+    margin-bottom: 5px;
+}
+
+.footerColumn ul {
+    list-style: none;
+}
+
+.footerColumn li {
+    margin-bottom: 10px;
+}
+
+.footerColumn a {
+    color: var(--text-color);
+    transition: color 0.3s;
+
+    &:hover {
+        color: var(--primary-color);
+    }
+}

@@ -1,0 +1,138 @@
+.mainHeader {
+    position: fixed;
+    /* Тепер хедер завжди фіксований */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 20px 0;
+    transition: padding 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Стилі, які застосовуються при прокрутці */
+.scrolled {
+    background-color: rgba(17, 17, 34, 0.85);
+    /* Напівпрозорий темний фон */
+    padding: 15px 0;
+    /* Робимо хедер трохи меншим */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    /* Ефект "матового скла" */
+}
+
+.headerContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerLogo a {
+    font-family: var(--font-orbitron);
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.headerNav ul {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.headerNav a {
+    color: var(--text-color);
+    font-size: 1.1em;
+    font-weight: 500;
+    padding-bottom: 5px;
+    position: relative;
+    transition: color 0.3s;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        transition: width 0.3s;
+    }
+
+    &:hover::after,
+    &.active::after {
+        width: 100%;
+    }
+
+    &:hover,
+    &.active {
+        color: var(--primary-color);
+    }
+}
+
+.contactButton {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.1em;
+    font-weight: 500;
+    font-family: var(--font-body);
+    padding-bottom: 5px;
+    position: relative;
+    cursor: pointer;
+    transition: color 0.3s;
+    // Копіюємо стилі з .headerNav a
+        &:hover,
+        &.active {
+            color: var(--primary-color);
+        }
+    
+        &::after {
+            content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: var(--primary-color);
+                transition: width 0.3s;
+        }
+    
+        &:hover::after,
+        &.active::after {
+        width: 100%;
+        }
+    }
+
+        .rightSection {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+    
+        .cartIcon {
+            position: relative;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+    
+        .cartCount {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: 700;
+        }

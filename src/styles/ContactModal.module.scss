@@ -1,0 +1,84 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: #111122;
+    padding: 30px 40px;
+    border-radius: 15px;
+    border: 1px solid var(--primary-color);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.modalContent h3,
+.modalContent p {
+    text-align: center;
+}
+
+.modalContent h3 {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.modalContent p {
+    color: var(--text-secondary-color);
+    margin-bottom: 25px;
+}
+
+.modalContent form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modalContent input,
+.modalContent textarea {
+    /* стилі з ContactPage.module.scss */
+        width: 100%;
+            padding: 15px;
+            background-color: #2a2a3e;
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+}
+
+.formButton {
+    padding: 15px 30px;
+        background-color: var(--primary-color);
+        color: var(--background-color);
+        border: none;
+        border-radius: 8px;
+        font-family: var(--font-orbitron);
+        cursor: pointer;
+        transition: transform 0.2s;
+        font-size: 1rem;
+        font-weight: 700;
+    
+        &:hover {
+            transform: scale(1.05);
+        }
+}
