@@ -1,13 +1,14 @@
 "use client";
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
-import { supabase } from '@/lib/supabaseClient';
-import { useRouter } from 'next/navigation';
+import { loadStripe } from '@stripe/stripe-js'; // Імпортуємо loadStripe
 import styles from '@/styles/CheckoutPage.module.scss';
+
+// Опублікований ключ Stripe (НЕ СЕКРЕТНИЙ КЛЮЧ!)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
   const { cartItems, totalPrice, clearCart } = useCart();
-  const router = useRouter();
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -20,6 +21,8 @@ const CheckoutPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const stripe = await stripePromise;
+
     const orderData = {
       customer_name: formData.name,
       customer_phone: formData.phone,
@@ -28,19 +31,33 @@ const CheckoutPage = () => {
       total_price: totalPrice,
     };
 
-    const { error } = await supabase.from('orders').insert([orderData]);
+    // Створюємо Checkout-сесію через наш майбутній API-маршрут
+    const response = await fetch('/api/create-stripe-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(orderData),
+    });
 
-    if (error) {
-      alert('Сталася помилка при оформленні замовлення. Спробуйте ще раз.');
-      console.error('Supabase error:', error);
-      setIsSubmitting(false);
+    if (response.ok) {
+      const session = await response.json();
+      // Перенаправляємо користувача на сторінку оплати Stripe
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
+
+      if (result.error) {
+        alert(result.error.message);
+        setIsSubmitting(false);
+      }
     } else {
-      alert('Дякуємо! Ваше замовлення прийнято.');
-      clearCart();
-      router.push('/order-success'); // Перенаправляємо на сторінку подяки
+      alert('Помилка при створенні сесії оплати. Спробуйте ще раз.');
+      setIsSubmitting(false);
     }
   };
 
+  // ... решта коду залишається незмінною ...
   return (
     <main className={styles.checkoutSection}>
       <div className={styles.checkoutContainer}>
