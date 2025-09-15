@@ -1,78 +1,106 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
-import { loadStripe } from '@stripe/stripe-js'; // Імпортуємо loadStripe
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import styles from '@/styles/CheckoutPage.module.scss';
+import PaymentForm from '@/components/PaymentForm';
 
 // Опублікований ключ Stripe (НЕ СЕКРЕТНИЙ КЛЮЧ!)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
-  const { cartItems, totalPrice, clearCart } = useCart();
+  const { cartItems, totalPrice } = useCart();
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
+  const [orderId, setOrderId] = useState(null);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    const stripe = await stripePromise;
+    setIsProcessing(true);
 
     const orderData = {
-      customer_name: formData.name,
-      customer_phone: formData.phone,
-      delivery_address: formData.address,
+      ...formData,
       order_items: cartItems,
       total_price: totalPrice,
     };
 
-    // Створюємо Checkout-сесію через наш майбутній API-маршрут
-    const response = await fetch('/api/create-stripe-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderData),
-    });
-
-    if (response.ok) {
-      const session = await response.json();
-      // Перенаправляємо користувача на сторінку оплати Stripe
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.id,
+    try {
+      // Відправляємо запит до API, щоб отримати client_secret для оплати
+      const response = await fetch('/api/create-stripe-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
       });
 
-      if (result.error) {
-        alert(result.error.message);
-        setIsSubmitting(false);
+      if (!response.ok) {
+        throw new Error('Помилка при створенні платіжної сесії.');
       }
-    } else {
-      alert('Помилка при створенні сесії оплати. Спробуйте ще раз.');
-      setIsSubmitting(false);
+
+      const { clientSecret, orderId } = await response.json();
+      
+      setClientSecret(clientSecret);
+      setOrderId(orderId);
+      setIsFormSubmitted(true); // Показуємо платіжну форму
+      
+    } catch (error) {
+      alert(error.message);
+      setIsProcessing(false);
     }
   };
 
-  // ... решта коду залишається незмінною ...
+  const appearance = {
+    theme: 'dark',
+    variables: {
+      colorPrimary: '#FFD700',
+      colorBackground: '#1c1c2e',
+      colorText: '#FFFFFF',
+      colorDanger: '#ef4444',
+      fontFamily: 'Montserrat, sans-serif',
+    },
+  };
+  const options = {
+    clientSecret,
+    appearance,
+  };
+
   return (
     <main className={styles.checkoutSection}>
       <div className={styles.checkoutContainer}>
         <h1>Оформлення замовлення</h1>
         <div className={styles.grid}>
           <div className={styles.formWrapper}>
-            <form onSubmit={handleSubmit}>
-              <h3>Ваші контактні дані</h3>
-              <input type="text" name="name" placeholder="Ім'я та прізвище" required onChange={handleInputChange} />
-              <input type="tel" name="phone" placeholder="Номер телефону" required onChange={handleInputChange} />
-              <input type="text" name="address" placeholder="Адреса доставки" required onChange={handleInputChange} />
-              <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Обробка...' : `Підтвердити замовлення на ${totalPrice.toFixed(2)} CHF`}
-              </button>
-            </form>
+            {!isFormSubmitted ? (
+              <form onSubmit={handleContactSubmit}>
+                <h3>Ваші контактні дані</h3>
+                <input type="text" name="name" placeholder="Ім'я та прізвище" required onChange={handleInputChange} />
+                <input type="tel" name="phone" placeholder="Номер телефону" required onChange={handleInputChange} />
+                <input type="text" name="address" placeholder="Адреса доставки" required onChange={handleInputChange} />
+                <button type="submit" disabled={isProcessing}>
+                  {isProcessing ? 'Обробка...' : `Підтвердити дані та перейти до оплати`}
+                </button>
+              </form>
+            ) : (
+              // Відображаємо платіжну форму Stripe після заповнення контактних даних
+              clientSecret && (
+                <Elements options={options} stripe={stripePromise}>
+                  <PaymentForm 
+                    orderId={orderId} 
+                    customerData={formData}
+                    clientSecret={clientSecret}
+                  />
+                </Elements>
+              )
+            )}
           </div>
           <div className={styles.summary}>
             <h3>Ваше замовлення</h3>
