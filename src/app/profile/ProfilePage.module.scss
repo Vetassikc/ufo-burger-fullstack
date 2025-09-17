@@ -1,0 +1,23 @@
+/* src/app/profile/ProfilePage.module.scss */
+
+.container {
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 2rem;
+  text-align: center;
+  min-height: 50vh;
+}
+
+.pointsCard {
+  background-color: #111122;
+  border: 1px solid #2a2a3e;
+  border-radius: 15px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.pointsValue {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}

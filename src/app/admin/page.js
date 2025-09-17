@@ -33,7 +33,10 @@ const AdminPage = () => {
     checkUser();
   }, [router]);
 
-  const handleLogout = async () => { /* ... ваш існуючий код ... */ };
+  const handleLogout = async () => {
+    await supabase.auth.signOut(); // Команда для виходу з системи
+    router.push('/'); // Перенаправляємо на головну сторінку
+  };
 
   // НОВА ФУНКЦІЯ для оновлення статусу
   const handleStatusChange = async (orderId, newStatus) => {
