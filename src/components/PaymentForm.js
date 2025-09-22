@@ -1,3 +1,5 @@
+// src/components/PaymentForm.js
+
 "use client";
 import React, { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -20,30 +22,19 @@ const PaymentForm = ({ orderId, customerData, clientSecret }) => {
 
     setIsProcessing(true);
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
+    // Ми більше не будемо перенаправляти вручну
+    // А довіримо це Stripe, вказавши правильну return_url
+    const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/order-success?orderId=${orderId}`,
-        shipping: {
-          name: customerData.name,
-          address: {
-            line1: customerData.address,
-            postal_code: '8001', // Приклад, вам потрібно буде отримати поштовий індекс
-            city: 'Zurich',
-            country: 'CH',
-          },
-        },
+        // Stripe автоматично додасть payment_intent до цієї URL
+        return_url: `${window.location.origin}/order-success`, 
       },
-      redirect: 'if_required',
     });
 
+    // Цей код виконається, тільки якщо є помилка
     if (error) {
       setMessage(error.message);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      setMessage('Payment succeeded!');
-      // Якщо платіж успішний, очищаємо кошик і перенаправляємо
-      clearCart();
-      router.push(`/order-success?orderId=${orderId}`);
     }
 
     setIsProcessing(false);
@@ -51,17 +42,19 @@ const PaymentForm = ({ orderId, customerData, clientSecret }) => {
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
+      <h3>Введіть дані для оплати</h3>
       <PaymentElement id="payment-element" />
       <button 
         disabled={isProcessing || !stripe || !elements} 
         id="submit" 
         className={styles.formButton}
+        style={{ marginTop: '20px' }} // Додамо трохи відступу
       >
         <span id="button-text">
-          {isProcessing ? 'Обробка...' : 'Підтвердити замовлення'}
+          {isProcessing ? 'Обробка...' : 'Сплатити'}
         </span>
       </button>
-      {message && <div id="payment-message">{message}</div>}
+      {message && <div id="payment-message" style={{ color: '#ff4d4d', marginTop: '15px' }}>{message}</div>}
     </form>
   );
 };

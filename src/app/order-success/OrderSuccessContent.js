@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; // <-- ОСЬ ТУТ ВИПРАВЛЕНО
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
@@ -7,33 +7,36 @@ import styles from '@/styles/SuccessPage.module.scss';
 
 const OrderSuccessContent = () => {
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get('sessionId');
+  const paymentIntentId = searchParams.get('payment_intent');
   const { clearCart } = useCart();
-  const [loading, setLoading] = useState(true);
-  const [isSuccess, setIsSuccess] = useState(false);
+
+  const [status, setStatus] = useState('processing');
+  const [hasVerified, setHasVerified] = useState(false);
 
   useEffect(() => {
-    if (sessionId) {
-      fetch(`/api/stripe-webhook?sessionId=${sessionId}`)
+    if (paymentIntentId && !hasVerified) {
+      setHasVerified(true);
+
+      fetch(`/api/verify-payment?payment_intent_id=${paymentIntentId}`)
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {
-            setIsSuccess(true);
+            setStatus('success');
             clearCart();
           } else {
-            setIsSuccess(false);
+            setStatus('failed');
           }
-          setLoading(false);
         })
         .catch(err => {
           console.error(err);
-          setIsSuccess(false);
-          setLoading(false);
+          setStatus('failed');
         });
+    } else if (!paymentIntentId) {
+        setStatus('failed');
     }
-  }, [sessionId, clearCart]);
+  }, [paymentIntentId, hasVerified, clearCart]);
 
-  if (loading) {
+  if (status === 'processing') {
     return (
       <main className={styles.successContainer}>
         <h1>Обробка вашого замовлення...</h1>
@@ -42,11 +45,11 @@ const OrderSuccessContent = () => {
     );
   }
 
-  if (isSuccess) {
+  if (status === 'success') {
     return (
       <main className={styles.successContainer}>
         <h1>🚀 Дякуємо за замовлення!</h1>
-        <p>Ваше космічне замовлення вже готується до відправки.</p>
+        <p>Ваше космічне замовлення вже готується до відправки. Бали нараховано!</p>
         <Link href="/menu" className={styles.ctaButton}>Повернутися до меню</Link>
       </main>
     );

@@ -1,3 +1,5 @@
+// src/app/checkout/page.js
+
 "use client";
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
@@ -5,8 +7,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import styles from '@/styles/CheckoutPage.module.scss';
 import PaymentForm from '@/components/PaymentForm';
+import { supabase } from '@/lib/supabaseClient';
 
-// Опублікований ключ Stripe (НЕ СЕКРЕТНИЙ КЛЮЧ!)
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
@@ -16,6 +18,53 @@ const CheckoutPage = () => {
   const [orderId, setOrderId] = useState(null);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null); // <-- Стан для профілю
+  const [discount, setDiscount] = useState(0); // <-- Стан для знижки
+  const [finalPrice, setFinalPrice] = useState(totalPrice); // <-- Стан для фінальної ціни
+
+  useEffect(() => {
+    const getUserAndProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('full_name, phone, address, order_count')
+          .eq('id', user.id)
+          .single();
+        
+        if (profileData) {
+          setProfile(profileData);
+          // Заповнюємо форму даними з профілю
+          setFormData({
+            name: profileData.full_name || '',
+            phone: profileData.phone || '',
+            address: profileData.address || '',
+          });
+
+          // --- ЛОГІКА РОЗРАХУНКУ ЗНИЖКИ ---
+          const orderCount = profileData.order_count || 0;
+          let currentDiscount = 0;
+          if (orderCount === 0) {
+            currentDiscount = 0.10; // -10% на перше замовлення
+          } else if ((orderCount + 1) % 6 === 0) {
+            currentDiscount = 0.30; // -30% на кожне 6-те замовлення
+          }
+          setDiscount(currentDiscount);
+          setFinalPrice(totalPrice * (1 - currentDiscount));
+        }
+      }
+    };
+    getUserAndProfile();
+  }, [user, totalPrice]); // Додаємо totalPrice в залежності
+
+  // Оновлюємо фінальну ціну, якщо кошик змінився
+  useEffect(() => {
+      setFinalPrice(totalPrice * (1 - discount));
+  }, [totalPrice, discount]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,28 +78,24 @@ const CheckoutPage = () => {
     const orderData = {
       ...formData,
       order_items: cartItems,
-      total_price: totalPrice,
+      total_price: finalPrice, // <-- ВАЖЛИВО: передаємо ціну зі знижкою
+      user_id: user ? user.id : null,
     };
 
     try {
-      // Відправляємо запит до API, щоб отримати client_secret для оплати
       const response = await fetch('/api/create-stripe-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
       });
 
-      if (!response.ok) {
-        throw new Error('Помилка при створенні платіжної сесії.');
-      }
+      if (!response.ok) throw new Error('Помилка при створенні платіжної сесії.');
 
       const { clientSecret, orderId } = await response.json();
       
       setClientSecret(clientSecret);
       setOrderId(orderId);
-      setIsFormSubmitted(true); // Показуємо платіжну форму
+      setIsFormSubmitted(true);
       
     } catch (error) {
       alert(error.message);
@@ -58,20 +103,8 @@ const CheckoutPage = () => {
     }
   };
 
-  const appearance = {
-    theme: 'dark',
-    variables: {
-      colorPrimary: '#FFD700',
-      colorBackground: '#1c1c2e',
-      colorText: '#FFFFFF',
-      colorDanger: '#ef4444',
-      fontFamily: 'Montserrat, sans-serif',
-    },
-  };
-  const options = {
-    clientSecret,
-    appearance,
-  };
+  const appearance = { theme: 'dark' /* ... */ };
+  const options = { clientSecret, appearance };
 
   return (
     <main className={styles.checkoutSection}>
@@ -82,15 +115,14 @@ const CheckoutPage = () => {
             {!isFormSubmitted ? (
               <form onSubmit={handleContactSubmit}>
                 <h3>Ваші контактні дані</h3>
-                <input type="text" name="name" placeholder="Ім'я та прізвище" required onChange={handleInputChange} />
-                <input type="tel" name="phone" placeholder="Номер телефону" required onChange={handleInputChange} />
-                <input type="text" name="address" placeholder="Адреса доставки" required onChange={handleInputChange} />
-                <button type="submit" disabled={isProcessing}>
-                  {isProcessing ? 'Обробка...' : `Підтвердити дані та перейти до оплати`}
+                <input type="text" name="name" placeholder="Ім'я та прізвище" required value={formData.name} onChange={handleInputChange} />
+                <input type="tel" name="phone" placeholder="Номер телефону" required value={formData.phone} onChange={handleInputChange} />
+                <input type="text" name="address" placeholder="Адреса доставки" required value={formData.address} onChange={handleInputChange} />
+                <button type="submit" disabled={isProcessing || cartItems.length === 0}>
+                  {isProcessing ? 'Обробка...' : 'Перейти до оплати'}
                 </button>
               </form>
             ) : (
-              // Відображаємо платіжну форму Stripe після заповнення контактних даних
               clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
                   <PaymentForm 
@@ -111,9 +143,15 @@ const CheckoutPage = () => {
               </div>
             ))}
             <hr />
+            {discount > 0 && (
+              <div className={`${styles.summaryItem} ${styles.discount}`}>
+                <strong>Знижка:</strong>
+                <strong>-{(discount * 100).toFixed(0)}%</strong>
+              </div>
+            )}
             <div className={styles.summaryTotal}>
               <strong>Всього:</strong>
-              <strong>{totalPrice.toFixed(2)} CHF</strong>
+              <strong>{finalPrice.toFixed(2)} CHF</strong>
             </div>
           </div>
         </div>

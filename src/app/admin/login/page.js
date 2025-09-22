@@ -1,10 +1,7 @@
-// src/app/login/page.js
-
 "use client";
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import styles from '@/styles/AuthPage.module.scss';
 
 const LoginPage = () => {
@@ -25,15 +22,15 @@ const LoginPage = () => {
     if (error) {
       setError(error.message);
     } else {
-      // Якщо логін успішний, перенаправляємо на сторінку профілю
-      router.push('/profile');
+      // Якщо логін успішний, перенаправляємо на майбутню адмін-панель
+      router.push('/admin');
     }
   };
 
   return (
     <main className={styles.authContainer}>
       <div className={styles.authForm}>
-        <h1>Вхід у кабінет</h1>
+        <h1>Вхід в панель адміністратора</h1>
         <form onSubmit={handleLogin}>
           <input 
             type="email" 
@@ -52,9 +49,6 @@ const LoginPage = () => {
           <button type="submit">Увійти</button>
           {error && <p className={styles.error}>{error}</p>}
         </form>
-        <p style={{ marginTop: '20px' }}>
-          Немає акаунта? <Link href="/register" style={{ color: 'var(--primary-color)' }}>Зареєструватися</Link>
-        </p>
       </div>
     </main>
   );

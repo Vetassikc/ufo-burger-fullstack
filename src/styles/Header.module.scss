@@ -136,3 +136,26 @@
             font-family: var(--font-body);
             font-weight: 700;
         }
+
+.authButton {
+  background: none;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+
+  // Стиль для головної кнопки (Реєстрація)
+  &.primary {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+}

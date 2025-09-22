@@ -1,11 +1,26 @@
 /* src/app/profile/ProfilePage.module.scss */
 
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 4rem auto;
   padding: 2rem;
+}
+
+.container h1 {
   text-align: center;
-  min-height: 50vh;
+  margin-bottom: 1rem;
+}
+.container p {
+  text-align: center;
+  color: var(--text-secondary-color);
+  margin-bottom: 3rem;
+}
+
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: start;
 }
 
 .pointsCard {
@@ -13,11 +28,70 @@
   border: 1px solid #2a2a3e;
   border-radius: 15px;
   padding: 2rem;
-  margin-top: 2rem;
+  text-align: center;
+}
+
+.pointsCard h2 {
+    font-size: 1.2rem;
+    color: var(--text-secondary-color);
+    margin-bottom: 0.5rem;
 }
 
 .pointsValue {
   font-size: 3rem;
   font-weight: bold;
   color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.profileForm {
+    background-color: #111122;
+    border: 1px solid #2a2a3e;
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.profileForm h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.profileForm label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary-color);
+}
+
+.profileForm input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 1.5rem;
+    background-color: #2a2a3e;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.profileForm button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+    
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.message {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--primary-color);
 }
