@@ -11,17 +11,16 @@ export async function GET(req) {
     const url = new URL(req.url);
     const paymentIntentId = url.searchParams.get('payment_intent_id');
 
-    if (!paymentIntentId) {
-      throw new Error('Payment Intent ID is missing');
-    }
+    if (!paymentIntentId) throw new Error('Payment Intent ID is missing');
 
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     if (paymentIntent.status === 'succeeded') {
       const orderId = paymentIntent.metadata.order_id;
       const userId = paymentIntent.metadata.user_id;
+      // Отримуємо бали для списання з метаданих
+      const pointsToUse = parseInt(paymentIntent.metadata.points_to_use || '0'); 
 
-      // Оновлюємо статус замовлення
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .update({ status: 'completed' })
@@ -31,20 +30,17 @@ export async function GET(req) {
 
       if (orderError) throw new Error(orderError.message);
 
-      // Якщо є користувач, оновлюємо його профіль (бали + лічильник замовлень)
       if (userId && orderData) {
         const pointsToAdd = Math.floor(orderData.total_price);
         
-        if (pointsToAdd >= 0) { // Нараховуємо, навіть якщо 0 (для оновлення лічильника)
+        // Викликаємо оновлену функцію з трьома параметрами
+        const { error: profileUpdateError } = await supabase.rpc('update_profile_after_order', {
+          user_id_input: userId,
+          points_to_add: pointsToAdd,
+          points_to_subtract: pointsToUse, // <-- Передаємо бали для списання
+        });
           
-          // ▼▼▼ ВИКЛИКАЄМО НАШУ НОВУ ФУНКЦІЮ ▼▼▼
-          const { error: profileUpdateError } = await supabase.rpc('update_profile_after_order', {
-            user_id_input: userId,
-            points_to_add: pointsToAdd,
-          });
-          
-          if (profileUpdateError) throw new Error(profileUpdateError.message);
-        }
+        if (profileUpdateError) throw new Error(profileUpdateError.message);
       }
       return NextResponse.json({ status: 'success' });
     } else {

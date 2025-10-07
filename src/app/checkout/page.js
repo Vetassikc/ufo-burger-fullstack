@@ -10,6 +10,7 @@ import PaymentForm from '@/components/PaymentForm';
 import { supabase } from '@/lib/supabaseClient';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const POINTS_TO_CHF_RATE = 10;
 
 const CheckoutPage = () => {
   const { cartItems, totalPrice } = useCart();
@@ -19,9 +20,11 @@ const CheckoutPage = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null); // <-- Стан для профілю
-  const [discount, setDiscount] = useState(0); // <-- Стан для знижки
-  const [finalPrice, setFinalPrice] = useState(totalPrice); // <-- Стан для фінальної ціни
+  const [profile, setProfile] = useState(null);
+  const [discount, setDiscount] = useState(0);
+  const [pointsToUse, setPointsToUse] = useState(0);
+  const [pointsDiscount, setPointsDiscount] = useState(0);
+  const [finalPrice, setFinalPrice] = useState(totalPrice);
 
   useEffect(() => {
     const getUserAndProfile = async () => {
@@ -31,44 +34,55 @@ const CheckoutPage = () => {
       if (user) {
         const { data: profileData } = await supabase
           .from('profiles')
-          .select('full_name, phone, address, order_count')
+          .select('*')
           .eq('id', user.id)
           .single();
         
         if (profileData) {
           setProfile(profileData);
-          // Заповнюємо форму даними з профілю
           setFormData({
             name: profileData.full_name || '',
             phone: profileData.phone || '',
             address: profileData.address || '',
           });
 
-          // --- ЛОГІКА РОЗРАХУНКУ ЗНИЖКИ ---
           const orderCount = profileData.order_count || 0;
           let currentDiscount = 0;
           if (orderCount === 0) {
-            currentDiscount = 0.10; // -10% на перше замовлення
+            currentDiscount = 0.10;
           } else if ((orderCount + 1) % 6 === 0) {
-            currentDiscount = 0.30; // -30% на кожне 6-те замовлення
+            currentDiscount = 0.30;
           }
           setDiscount(currentDiscount);
-          setFinalPrice(totalPrice * (1 - currentDiscount));
         }
       }
     };
     getUserAndProfile();
-  }, [user, totalPrice]); // Додаємо totalPrice в залежності
+  }, []);
 
-  // Оновлюємо фінальну ціну, якщо кошик змінився
   useEffect(() => {
-      setFinalPrice(totalPrice * (1 - discount));
-  }, [totalPrice, discount]);
+    const priceAfterPercentageDiscount = totalPrice * (1 - discount);
+    const newFinalPrice = priceAfterPercentageDiscount - pointsDiscount;
+    setFinalPrice(newFinalPrice > 0 ? newFinalPrice : 0);
+  }, [totalPrice, discount, pointsDiscount]);
 
-
+  // ▼▼▼ ОСЬ ФУНКЦІЯ, ЯКОЇ НЕ ВИСТАЧАЛО ▼▼▼
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleApplyPoints = () => {
+    if (!profile || profile.points <= 0) return;
+
+    const priceAfterPercentageDiscount = totalPrice * (1 - discount);
+    const maxPointsAsCHF = Math.floor(profile.points / POINTS_TO_CHF_RATE);
+    
+    const discountFromPoints = Math.min(maxPointsAsCHF, priceAfterPercentageDiscount);
+    const pointsThatWillBeUsed = Math.floor(discountFromPoints * POINTS_TO_CHF_RATE);
+
+    setPointsDiscount(discountFromPoints);
+    setPointsToUse(pointsThatWillBeUsed);
   };
 
   const handleContactSubmit = async (e) => {
@@ -78,8 +92,9 @@ const CheckoutPage = () => {
     const orderData = {
       ...formData,
       order_items: cartItems,
-      total_price: finalPrice, // <-- ВАЖЛИВО: передаємо ціну зі знижкою
+      total_price: finalPrice,
       user_id: user ? user.id : null,
+      points_to_use: pointsToUse,
     };
 
     try {
@@ -103,7 +118,7 @@ const CheckoutPage = () => {
     }
   };
 
-  const appearance = { theme: 'dark' /* ... */ };
+  const appearance = { theme: 'dark' };
   const options = { clientSecret, appearance };
 
   return (
@@ -145,12 +160,29 @@ const CheckoutPage = () => {
             <hr />
             {discount > 0 && (
               <div className={`${styles.summaryItem} ${styles.discount}`}>
-                <strong>Знижка:</strong>
+                <strong>Знижка за лояльність:</strong>
                 <strong>-{(discount * 100).toFixed(0)}%</strong>
               </div>
             )}
+            
+            {profile && profile.points > 0 && !isFormSubmitted && (
+              <div className={styles.pointsSection}>
+                <p>У вас є {profile.points} балів.</p>
+                <button type="button" onClick={handleApplyPoints} disabled={pointsDiscount > 0}>
+                  {pointsDiscount > 0 ? `Застосовано -${pointsDiscount.toFixed(2)} CHF` : "Використати бали"}
+                </button>
+              </div>
+            )}
+
+            {pointsDiscount > 0 && (
+                 <div className={`${styles.summaryItem} ${styles.discount}`}>
+                    <strong>Знижка за бали:</strong>
+                    <strong>-{pointsDiscount.toFixed(2)} CHF</strong>
+                </div>
+            )}
+            
             <div className={styles.summaryTotal}>
-              <strong>Всього:</strong>
+              <strong>До сплати:</strong>
               <strong>{finalPrice.toFixed(2)} CHF</strong>
             </div>
           </div>

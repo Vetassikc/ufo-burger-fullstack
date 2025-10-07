@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export async function POST(req) {
   try {
     // 1. Отримуємо user_id з тіла запиту
-    const { order_items, total_price, user_id, ...formData } = await req.json();
+    const { order_items, total_price, user_id, points_to_use, ...formData } = await req.json();
 
     // 2. Створюємо замовлення у Supabase, передаючи user_id
     const { data: newOrder, error: orderError } = await supabase
@@ -39,7 +39,8 @@ export async function POST(req) {
       currency: 'chf',
       metadata: {
         order_id: orderId,
-        user_id: user_id, // <-- Також передаємо в Stripe на всяк випадок
+        user_id: user_id,
+        points_to_use: points_to_use || 0, // <-- 2. ДОДАЄМО БАЛИ В МЕТАДАНІ
       },
       payment_method_types: ['card', 'paypal'],
     });
