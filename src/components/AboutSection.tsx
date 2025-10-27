@@ -1,3 +1,5 @@
+// src/components/AboutSection.tsx
+
 import Image from 'next/image';
 import styles from '@/styles/AboutSection.module.scss';
 
@@ -6,8 +8,6 @@ const AboutSection = () => {
     <section className={styles.aboutSection}>
       <div className={styles.aboutContainer}>
         <div className={styles.imageWrapper}>
-          {/* Покладіть ваше зображення, наприклад 'about-burger.jpg', у папку public/img/ */}
-          {/* Якщо у вас поки немає папки public, створіть її в корені проєкту */}
           {/* <Image src="/img/about-burger.jpg" alt="UFO Burger Story" width={500} height={500} layout="responsive" /> */}
           <div className={styles.imagePlaceholder}></div>
         </div>

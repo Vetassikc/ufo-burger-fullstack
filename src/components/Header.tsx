@@ -1,19 +1,26 @@
-// src/components/Header.js
+// src/components/Header.tsx
 
 "use client";
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // Додаємо useRouter
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import styles from '@/styles/Header.module.scss';
 import { useCart } from '@/context/CartContext';
 import { supabase } from '@/lib/supabaseClient';
+import type { User } from '@supabase/supabase-js'; // Імпортуємо тип User
 
-const Header = ({ onContactClick }) => {
+// Описуємо типи для props, які отримує компонент
+type HeaderProps = {
+  onContactClick: () => void; // Функція, яка нічого не повертає
+};
+
+const Header = ({ onContactClick }: HeaderProps) => {
   const pathname = usePathname();
-  const router = useRouter(); // Ініціалізуємо роутер для перенаправлення
+  const router = useRouter();
   const { totalItems } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState(null);
+  // Чітко вказуємо, що user може бути User або null
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,12 +28,14 @@ const Header = ({ onContactClick }) => {
     };
     window.addEventListener('scroll', handleScroll);
 
-    // Одразу перевіряємо, чи є користувач
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    // Отримуємо поточного користувача
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-    });
+    };
+    getUser();
 
-    // Підписуємось на зміни статусу автентифікації
+    // Cлідкуємо за зміною стану аутентифікації
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -39,7 +48,7 @@ const Header = ({ onContactClick }) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/'); // Перенаправляємо на головну після виходу
+    router.push('/'); // Після виходу повертаємо на головну
   };
 
   const headerClasses = `${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`;
@@ -63,13 +72,11 @@ const Header = ({ onContactClick }) => {
           <nav className={`${styles.headerNav} ${styles.rightNav}`}>
             <ul>
               {user ? (
-                // --- Стан, коли користувач ЗАЛОГІНЕНИЙ ---
                 <>
                   <li><Link href="/profile" className={pathname === '/profile' ? styles.active : ''}>Профіль</Link></li>
                   <li><button onClick={handleLogout} className={styles.authButton}>Вийти</button></li>
                 </>
               ) : (
-                // --- Стан, коли користувач - ГІСТЬ ---
                 <>
                   <li><Link href="/login" className={styles.authButton}>Увійти</Link></li>
                   <li><Link href="/register" className={`${styles.authButton} ${styles.primary}`}>Зареєструватися</Link></li>

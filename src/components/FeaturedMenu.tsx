@@ -1,3 +1,5 @@
+// src/components/FeaturedMenu.tsx
+
 import Link from 'next/link';
 import styles from '@/styles/FeaturedMenu.module.scss';
 

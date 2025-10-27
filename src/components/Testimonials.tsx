@@ -1,3 +1,5 @@
+// src/components/Testimonials.tsx
+
 import styles from '@/styles/Testimonials.module.scss';
 
 const Testimonials = () => {
