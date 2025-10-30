@@ -6,12 +6,17 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 // --- Описуємо типи ---
 
 // 1. Тип для одного товару в кошику
+// (В ідеалі, його варто винести в src/types/index.ts)
 export interface CartItem {
-  id: string; // Або number, залежно від вашої БД
+  id: string;
   name: string;
   price: number;
-  image_url: string;
+  image_url: string | null; // <-- Важливо: null, бо з меню може прийти null
   quantity: number;
+  // Додаємо поля, яких може не бути в CartItem, але є в MenuItem
+  created_at?: string;
+  description?: string;
+  category?: string;
 }
 
 // 2. Тип для об'єкта, який надає наш Context
@@ -19,6 +24,7 @@ interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (itemId: string) => void;
+  updateQuantity: (itemId: string, newQuantity: number) => void; // <-- ДОДАНО
   clearCart: () => void;
   totalPrice: number;
   totalItems: number;
@@ -30,9 +36,6 @@ type CartProviderProps = {
 };
 
 // --- Створюємо Context ---
-
-// Створюємо контекст з початковим значенням (або undefined)
-// Ми використовуємо 'as', щоб TypeScript нам "повірив", що ми надамо ці функції
 const CartContext = createContext<CartContextType>(undefined as any);
 
 // --- Створюємо Провайдер ---
@@ -57,57 +60,60 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === itemToAdd.id);
       if (existingItem) {
-        // Збільшуємо кількість, якщо товар вже є
+        // Збільшуємо кількість
         return prevItems.map(item =>
           item.id === itemToAdd.id ? { ...item, quantity: item.quantity + 1 } : item
         );
-      } else {
-        // Додаємо новий товар
-        return [...prevItems, { ...itemToAdd, quantity: 1 }];
       }
+      // Додаємо новий товар (переконуємось, що quantity 1)
+      return [...prevItems, { ...itemToAdd, quantity: 1 }];
     });
   };
 
   const removeFromCart = (itemId: string) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === itemId);
-      if (existingItem?.quantity === 1) {
-        // Видаляємо товар, якщо кількість 1
-        return prevItems.filter(item => item.id !== itemId);
-      } else {
-        // Зменшуємо кількість
-        return prevItems.map(item =>
-          item.id === itemId ? { ...item, quantity: item.quantity - 1 } : item
-        );
-      }
-    });
+    setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
   };
 
   const clearCart = () => {
     setCartItems([]);
   };
 
-  // Розраховуємо загальну суму та кількість
-  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+  // ▼▼▼ НОВА ФУНКЦІЯ, ЯКОЇ НЕ ВИСТАЧАЛО ▼▼▼
+  const updateQuantity = (itemId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      // Якщо кількість 0 або менше, видаляємо товар
+      removeFromCart(itemId);
+    } else {
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    }
+  };
+  // ▲▲▲ НОВА ФУНКЦІЯ ▲▲▲
+
+
+  // --- Розрахунки ---
+  const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        totalPrice,
-        totalItems
-      }}
-    >
+    <CartContext.Provider value={{
+      cartItems,
+      addToCart,
+      removeFromCart,
+      updateQuantity, // <-- ДОДАНО У ПРОВАЙДЕР
+      clearCart,
+      totalPrice,
+      totalItems
+    }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// --- Створюємо кастомний хук ---
+// --- Створюємо Хук ---
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
