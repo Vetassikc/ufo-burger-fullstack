@@ -1,30 +1,56 @@
-// src/app/checkout/page.js
+// src/app/checkout/page.tsx
 
 "use client";
-import { useState, useEffect } from 'react';
-import { useCart } from '@/context/CartContext';
-import { loadStripe } from '@stripe/stripe-js';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
+import { useCart, CartItem } from '@/context/CartContext';
+// Імпортуємо Appearance та StripeElementsOptions
+import { loadStripe, StripeElementsOptions, Appearance } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import styles from '@/styles/CheckoutPage.module.scss';
 import PaymentForm from '@/components/PaymentForm';
 import { supabase } from '@/lib/supabaseClient';
+import type { User } from '@supabase/supabase-js';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+// Завантажуємо Stripe
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
+);
+
 const POINTS_TO_CHF_RATE = 10;
+
+// --- Інтерфейси ---
+
+interface Profile {
+  id: string;
+  full_name: string | null;
+  phone: string | null;
+  address: string | null;
+  order_count: number | null;
+  points: number | null;
+}
+
+interface FormData {
+  name: string;
+  phone: string;
+  address: string;
+}
+
+// --- Компонент ---
 
 const CheckoutPage = () => {
   const { cartItems, totalPrice } = useCart();
-  const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
-  const [clientSecret, setClientSecret] = useState('');
-  const [orderId, setOrderId] = useState(null);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [discount, setDiscount] = useState(0);
-  const [pointsToUse, setPointsToUse] = useState(0);
-  const [pointsDiscount, setPointsDiscount] = useState(0);
-  const [finalPrice, setFinalPrice] = useState(totalPrice);
+  
+  const [formData, setFormData] = useState<FormData>({ name: '', phone: '', address: '' });
+  const [clientSecret, setClientSecret] = useState<string>('');
+  const [orderId, setOrderId] = useState<number | null>(null); 
+  const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [discount, setDiscount] = useState<number>(0);
+  const [pointsToUse, setPointsToUse] = useState<number>(0);
+  const [pointsDiscount, setPointsDiscount] = useState<number>(0);
+  const [finalPrice, setFinalPrice] = useState<number>(totalPrice);
 
   useEffect(() => {
     const getUserAndProfile = async () => {
@@ -32,11 +58,11 @@ const CheckoutPage = () => {
       setUser(user);
 
       if (user) {
-        const { data: profileData } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .single<Profile>(); 
         
         if (profileData) {
           setProfile(profileData);
@@ -49,9 +75,9 @@ const CheckoutPage = () => {
           const orderCount = profileData.order_count || 0;
           let currentDiscount = 0;
           if (orderCount === 0) {
-            currentDiscount = 0.10;
+            currentDiscount = 0.10; 
           } else if ((orderCount + 1) % 6 === 0) {
-            currentDiscount = 0.30;
+            currentDiscount = 0.30; 
           }
           setDiscount(currentDiscount);
         }
@@ -66,18 +92,16 @@ const CheckoutPage = () => {
     setFinalPrice(newFinalPrice > 0 ? newFinalPrice : 0);
   }, [totalPrice, discount, pointsDiscount]);
 
-  // ▼▼▼ ОСЬ ФУНКЦІЯ, ЯКОЇ НЕ ВИСТАЧАЛО ▼▼▼
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleApplyPoints = () => {
-    if (!profile || profile.points <= 0) return;
+    if (!profile || !profile.points || profile.points <= 0) return;
 
     const priceAfterPercentageDiscount = totalPrice * (1 - discount);
     const maxPointsAsCHF = Math.floor(profile.points / POINTS_TO_CHF_RATE);
-    
     const discountFromPoints = Math.min(maxPointsAsCHF, priceAfterPercentageDiscount);
     const pointsThatWillBeUsed = Math.floor(discountFromPoints * POINTS_TO_CHF_RATE);
 
@@ -85,7 +109,7 @@ const CheckoutPage = () => {
     setPointsToUse(pointsThatWillBeUsed);
   };
 
-  const handleContactSubmit = async (e) => {
+  const handleContactSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsProcessing(true);
 
@@ -106,20 +130,24 @@ const CheckoutPage = () => {
 
       if (!response.ok) throw new Error('Помилка при створенні платіжної сесії.');
 
-      const { clientSecret, orderId } = await response.json();
+      const { clientSecret, orderId } = await response.json() as { clientSecret: string, orderId: number };
       
       setClientSecret(clientSecret);
       setOrderId(orderId);
       setIsFormSubmitted(true);
       
-    } catch (error) {
+    } catch (error: any) { 
       alert(error.message);
       setIsProcessing(false);
     }
   };
 
-  const appearance = { theme: 'dark' };
-  const options = { clientSecret, appearance };
+  // ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
+  // 1. Використовуємо імпортований тип 'Appearance'
+  // 2. Використовуємо валідне значення 'night' замість 'dark'
+  const appearance: Appearance = { theme: 'night' };
+  const options: StripeElementsOptions = { clientSecret, appearance };
+  // ▲▲▲ КІНЕЦЬ ВИПРАВЛЕННЯ ▲▲▲
 
   return (
     <main className={styles.checkoutSection}>
@@ -138,11 +166,11 @@ const CheckoutPage = () => {
                 </button>
               </form>
             ) : (
-              clientSecret && (
+              clientSecret && orderId && ( 
                 <Elements options={options} stripe={stripePromise}>
                   <PaymentForm 
                     orderId={orderId} 
-                    customerData={formData}
+                    customerData={formData} 
                     clientSecret={clientSecret}
                   />
                 </Elements>
@@ -165,7 +193,7 @@ const CheckoutPage = () => {
               </div>
             )}
             
-            {profile && profile.points > 0 && !isFormSubmitted && (
+            {profile && profile.points && profile.points > 0 && !isFormSubmitted && (
               <div className={styles.pointsSection}>
                 <p>У вас є {profile.points} балів.</p>
                 <button type="button" onClick={handleApplyPoints} disabled={pointsDiscount > 0}>

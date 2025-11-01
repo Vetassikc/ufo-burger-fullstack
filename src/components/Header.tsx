@@ -1,96 +1,66 @@
 // src/components/Header.tsx
 
 "use client";
+import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import styles from '@/styles/Header.module.scss';
+import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-import { supabase } from '@/lib/supabaseClient';
-import type { User } from '@supabase/supabase-js'; // Імпортуємо тип User
+import styles from '@/styles/Header.module.scss';
+// ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ІМПОРТУ ▼▼▼
+import { FaCartShopping, FaUser, FaBars, FaXmark } from 'react-icons/fa6';
 
-// Описуємо типи для props, які отримує компонент
-type HeaderProps = {
-  onContactClick: () => void; // Функція, яка нічого не повертає
-};
+// 1. Визначаємо інтерфейс для пропсів
+interface HeaderProps {
+  onContactClick: () => void;
+}
 
+// 2. Застосовуємо інтерфейс до пропсів
 const Header = ({ onContactClick }: HeaderProps) => {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { totalItems } = useCart();
-  const [isScrolled, setIsScrolled] = useState(false);
-  // Чітко вказуємо, що user може бути User або null
-  const [user, setUser] = useState<User | null>(null);
+  const { cartItems } = useCart();
+  const [isNavOpen, setIsNavOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
+  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-    // Отримуємо поточного користувача
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-
-    // Cлідкуємо за зміною стану аутентифікації
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      subscription?.unsubscribe();
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/'); // Після виходу повертаємо на головну
-  };
-
-  const headerClasses = `${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`;
+  const toggleNav = () => setIsNavOpen(!isNavOpen);
 
   return (
-    <header className={headerClasses}>
-      <div className={styles.headerContainer}>
-        <nav className={`${styles.headerNav} ${styles.leftNav}`}>
-          <ul>
-            <li><Link href="/" className={pathname === '/' ? styles.active : ''}>Головна</Link></li>
-            <li><Link href="/menu" className={pathname === '/menu' ? styles.active : ''}>Меню</Link></li>
-            <li><Link href="/gallery" className={pathname === '/gallery' ? styles.active : ''}>Галерея</Link></li>
-          </ul>
-        </nav>
-
-        <div className={styles.headerLogo}>
-          <Link href="/">UFO</Link>
-        </div>
-
-        <div className={styles.rightSection}>
-          <nav className={`${styles.headerNav} ${styles.rightNav}`}>
-            <ul>
-              {user ? (
-                <>
-                  <li><Link href="/profile" className={pathname === '/profile' ? styles.active : ''}>Профіль</Link></li>
-                  <li><button onClick={handleLogout} className={styles.authButton}>Вийти</button></li>
-                </>
-              ) : (
-                <>
-                  <li><Link href="/login" className={styles.authButton}>Увійти</Link></li>
-                  <li><Link href="/register" className={`${styles.authButton} ${styles.primary}`}>Зареєструватися</Link></li>
-                </>
-              )}
-            </ul>
-          </nav>
-          <Link href="/cart" className={styles.cartIcon}>
-            🛒
-            {totalItems > 0 && (
-              <span className={styles.cartCount}>{totalItems}</span>
-            )}
-          </Link>
-        </div>
+    <header className={styles.header}>
+      <Link href="/" className={styles.logo}>
+        <Image src="/img/ufo-icon.png" alt="UFO Burger Logo" width={50} height={50} />
+        <span>UFO Burger</span>
+      </Link>
+      
+      <nav className={`${styles.nav} ${isNavOpen ? styles.navOpen : ''}`}>
+        <Link href="/" onClick={() => setIsNavOpen(false)}>Головна</Link>
+        <Link href="/menu" onClick={() => setIsNavOpen(false)}>Меню</Link>
+        <Link href="/gallery" onClick={() => setIsNavOpen(false)}>Галерея</Link>
+        {/* 3. Використовуємо onContactClick з пропсів */}
+        <button 
+          onClick={() => {
+            onContactClick();
+            setIsNavOpen(false);
+          }} 
+          className={styles.navContactBtn}
+        >
+          Контакти
+        </button>
+      </nav>
+      
+      <div className={styles.icons}>
+        <Link href="/profile" className={styles.iconLink}>
+          <FaUser />
+        </Link>
+        <Link href="/cart" className={styles.iconLink}>
+          {/* ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ІКОНКИ ▼▼▼ */}
+          <FaCartShopping />
+          {totalQuantity > 0 && (
+            <span className={styles.cartCount}>{totalQuantity}</span>
+          )}
+        </Link>
+        <button className={styles.mobileToggle} onClick={toggleNav}>
+          {/* ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ІКОНКИ ▼▼▼ */}
+          {isNavOpen ? <FaXmark /> : <FaBars />}
+        </button>
       </div>
     </header>
   );

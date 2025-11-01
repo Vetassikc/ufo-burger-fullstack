@@ -1,20 +1,23 @@
-// src/app/register/page.js
+// src/app/register/page.tsx
 
 "use client";
-import { useState } from 'react';
+import { useState, FormEvent } from 'react'; // Імпортуємо FormEvent
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '@/styles/AuthPage.module.scss'; // Використовуємо ті ж стилі
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState(''); // Для повідомлень про успіх або помилку
-  const router = useRouter();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [message, setMessage] = useState<string>(''); // Для повідомлень про успіх або помилку
+  const [loading, setLoading] = useState<boolean>(false); // Додаємо стан завантаження
+  const router = useRouter(); // router не використовується, але залишаємо, якщо знадобиться
 
-  const handleRegister = async (e) => {
+  // Типізуємо подію 'e'
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     setMessage('');
 
     const { data, error } = await supabase.auth.signUp({
@@ -31,10 +34,12 @@ const RegisterPage = () => {
       setEmail('');
       setPassword('');
     }
+    setLoading(false);
   };
 
   return (
-    <main className={styles.authContainer}>
+    // Використовую класи з оригінального файлу register/page.js
+    <main className={styles.authContainer}> 
       <div className={styles.authForm}>
         <h1>Створити акаунт</h1>
         <form onSubmit={handleRegister}>
@@ -54,7 +59,9 @@ const RegisterPage = () => {
             required 
             autoComplete="new-password"
           />
-          <button type="submit">Зареєструватися</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Реєструємо...' : 'Зареєструватися'}
+          </button>
           {message && <p className={styles.message}>{message}</p>}
         </form>
         <p style={{ marginTop: '20px' }}>

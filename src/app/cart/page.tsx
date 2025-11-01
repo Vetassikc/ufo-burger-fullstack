@@ -46,7 +46,7 @@ export default function CartPage() {
   );
 
   return (
-    <main className={styles.cartPage}>
+    <main className={styles.cartSection}>
       <div className={styles.cartContainer}>
         <h1 className={styles.pageTitle}>Ваш Кошик</h1>
         {cartItems.length === 0 ? (

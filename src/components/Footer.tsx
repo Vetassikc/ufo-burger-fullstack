@@ -1,7 +1,16 @@
+// src/components/Footer.tsx
+"use client"; // <-- 1. Додаємо "use client"
+import React from 'react'; // <-- 2. Додаємо React
 import Link from 'next/link';
 import styles from '@/styles/Footer.module.scss';
 
-const Footer = () => {
+// 3. Визначаємо інтерфейс для пропсів
+interface FooterProps {
+  onContactClick: () => void;
+}
+
+// 4. Застосовуємо інтерфейс
+const Footer = ({ onContactClick }: FooterProps) => {
   return (
     <footer className={styles.mainFooter}>
       <div className={styles.footerContainer}>
@@ -15,7 +24,12 @@ const Footer = () => {
             <li><Link href="/">Головна</Link></li>
             <li><Link href="/menu">Меню</Link></li>
             <li><Link href="/gallery">Галерея</Link></li>
-            <li><Link href="/contact">Контакти</Link></li>
+            {/* 5. Замінюємо Link на <a> з onClick */}
+            <li>
+              <a onClick={onContactClick} style={{ cursor: 'pointer' }}>
+                Контакти
+              </a>
+            </li>
           </ul>
         </div>
         <div className={styles.footerColumn}>
