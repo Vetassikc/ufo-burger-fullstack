@@ -8,19 +8,9 @@ import type { CartItem } from '@/context/CartContext';
 import Image from 'next/image';
 
 export default function CartPage() {
-  const { 
-    cartItems, 
-    removeFromCart, 
-    updateQuantity,
-    clearCart, 
-    totalPrice 
-  } = useCart();
-  
+  const { cartItems, removeFromCart, updateQuantity, clearCart, totalPrice } = useCart();
   const router = useRouter();
-  
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
+  const handleCheckout = () => router.push('/checkout');
 
   // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ТА СТРУКТУРИ ▼▼▼ ---
   const renderCartItem = (item: CartItem) => (
@@ -46,9 +36,7 @@ export default function CartPage() {
         {(item.price * item.quantity).toFixed(2)} CHF
       </div>
       <div className={styles.itemRemove}>
-        <button onClick={() => removeFromCart(item.id)}>
-          &times;
-        </button>
+        <button onClick={() => removeFromCart(item.id)}>&times;</button>
       </div>
     </div>
   );
@@ -57,7 +45,6 @@ export default function CartPage() {
     <main className={styles.cartSection}> 
       <div className={styles.cartContainer}>
         <h1 className={styles.pageTitle}>Ваш Кошик</h1>
-        
         {cartItems.length === 0 ? (
           <div className={styles.emptyCart}>
             <h2>Ваш кошик порожній</h2>
@@ -71,19 +58,13 @@ export default function CartPage() {
             <div className={styles.cartItems}> 
               {cartItems.map(renderCartItem)}
             </div>
-            
             <div className={styles.cartSummary}>
               <h2>Всього: {totalPrice.toFixed(2)} CHF</h2>
-              
               <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 <button 
                   onClick={clearCart} 
                   className={styles.ctaButton} 
-                  style={{ 
-                    backgroundColor: 'transparent', 
-                    color: 'var(--text-secondary-color)', 
-                    borderColor: 'var(--text-secondary-color)' 
-                  }}
+                  style={{ backgroundColor: 'transparent', color: 'var(--text-secondary-color)', borderColor: 'var(--text-secondary-color)' }}
                 >
                   Очистити кошик
                 </button>

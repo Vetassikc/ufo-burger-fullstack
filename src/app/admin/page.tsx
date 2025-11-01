@@ -58,14 +58,11 @@ const AdminDashboard = () => {
   // --- ▼▼▼ ВІДНОВЛЕННЯ ЛОГІКИ ЗМІНИ СТАТУСУ ▼▼▼ ---
   const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
     setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-
     const { error } = await supabase
       .from('orders')
       .update({ status: newStatus })
       .eq('id', orderId);
-
     if (error) {
-      console.error('Error updating status:', error);
       alert('Не вдалося оновити статус.');
       await fetchOrders(); 
     }
@@ -73,14 +70,13 @@ const AdminDashboard = () => {
 
   if (loading) return <p className={styles.loading}>Завантаження даних...</p>;
   
-  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ (КАРТКИ ЗАМІСТЬ ТАБЛИЦІ) ▼▼▼ ---
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ (КАРТКИ) ▼▼▼ ---
   return (
     <main className={styles.adminContainer}>
       <div className={styles.adminHeader}>
         <h1>Адмін-панель</h1>
         <button onClick={handleLogout} className={styles.logoutButton}>Вийти</button>
       </div>
-
       <div className={styles.content}>
         <h2>Останні замовлення</h2>
         {orders.length > 0 ? (

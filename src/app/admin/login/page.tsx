@@ -26,12 +26,7 @@ const AdminLoginPage = () => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(`Помилка входу: ${error.message}`);
     } else {
@@ -47,23 +42,9 @@ const AdminLoginPage = () => {
         <h1>Вхід в Адмін-панель</h1>
         <form onSubmit={handleLogin}>
           <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
           <label htmlFor="password">Пароль</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
           <button type="submit" disabled={loading}>
             {loading ? 'Входимо...' : 'Увійти'}
           </button>
@@ -73,5 +54,4 @@ const AdminLoginPage = () => {
     </main>
   );
 };
-
 export default AdminLoginPage;

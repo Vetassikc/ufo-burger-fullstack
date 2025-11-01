@@ -1,6 +1,5 @@
 // src/app/login/page.tsx
 "use client";
-
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -18,12 +17,7 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(`Помилка входу: ${error.message}`);
     } else {
@@ -41,39 +35,19 @@ const LoginPage = () => {
         <p>Увійдіть у свій акаунт, щоб побачити профіль та історію замовлень.</p>
         <form onSubmit={handleLogin}>
           <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="example@mail.com"
-          />
-          
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="example@mail.com" />
           <label htmlFor="password">Пароль</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Ваш пароль"
-          />
-          
+          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Ваш пароль" />
           <button type="submit" disabled={loading}>
             {loading ? 'Входимо...' : 'Увійти'}
           </button>
-          
           {message && <p className={styles.error}>{message}</p>}
         </form>
         <div className={styles.links}>
-          <p>
-            Немає акаунту? <Link href="/register">Зареєструватися</Link>
-          </p>
+          <p>Немає акаунту? <Link href="/register">Зареєструватися</Link></p>
         </div>
       </div>
     </main>
   );
 };
-
 export default LoginPage;

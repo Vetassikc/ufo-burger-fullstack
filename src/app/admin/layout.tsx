@@ -22,4 +22,3 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     </div>
   );
 }
-// --- ▲▲▲ КІНЕЦЬ ВИПРАВЛЕННЯ КЛАСІВ ▲▲▲ ---

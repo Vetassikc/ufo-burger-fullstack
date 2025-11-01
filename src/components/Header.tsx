@@ -7,7 +7,7 @@ import styles from '@/styles/Header.module.scss';
 import { useCart } from '@/context/CartContext';
 import { supabase } from '@/lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-import { FaCartShopping, FaUser } from 'react-icons/fa6'; // <-- Правильні іконки
+import { FaCartShopping, FaUser } from 'react-icons/fa6'; // <-- Потрібен 'npm install react-icons'
 
 type HeaderProps = {
   onContactClick: () => void; 
