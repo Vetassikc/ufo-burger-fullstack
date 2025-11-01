@@ -2,11 +2,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation'; // <-- Імпортуємо
+import { usePathname } from 'next/navigation'; // <-- 1. Імпортуємо usePathname
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactModal from '@/components/ContactModal';
-import CookieConsentModal from '@/components/CookieConsentModal'; // <-- Імпортуємо
+import CookieConsentModal from '@/components/CookieConsentModal'; // <-- 2. Імпортуємо Cookie Modal
 
 // Типізуємо props
 type MainLayoutProps = {
@@ -15,37 +15,42 @@ type MainLayoutProps = {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const [isContactModalOpen, setContactModalOpen] = useState(false);
-  const pathname = usePathname(); // <-- Отримуємо шлях
+  const pathname = usePathname(); // <-- 3. Отримуємо поточний шлях
 
-  // Логіка, щоб приховати Header/Footer на сторінках входу та адмінки
+  // --- 4. Логіка для приховування Header/Footer ---
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = pathname === '/login' || pathname === '/register';
-  const showLayout = !isAdminRoute && !isAuthRoute;
+  // Показуємо layout (Header/Footer) тільки якщо це НЕ адмін і НЕ авторизація
+  const showLayout = !isAdminRoute && !isAuthRoute; 
+  // --- Кінець логіки ---
 
   // Обробники для модального вікна
   const openContactModal = () => setContactModalOpen(true);
   const closeContactModal = () => setContactModalOpen(false);
 
-  // Якщо це сторінка адмінки або входу, показуємо ТІЛЬКИ контент
-  if (!showLayout) {
-    return <>{children}</>;
+  // 5. Умовно рендеримо layout
+  if (showLayout) {
+    return (
+      <>
+        {/* Header приймає onContactClick */}
+        <Header onContactClick={openContactModal} /> 
+        <main>{children}</main>
+        {/* Footer приймає onContactClick */}
+        <Footer onContactClick={openContactModal} /> 
+        
+        <CookieConsentModal /> 
+        {isContactModalOpen && <ContactModal onClose={closeContactModal} />}
+      </>
+    );
   }
 
-  // Для всіх інших сторінок показуємо повний layout
+  // Для /admin, /login, /register повертаємо ТІЛЬКИ children
+  // Це виправляє помилку <main> в <main> і лагодить CSS
   return (
     <>
-      {/* Ваш Header.tsx приймає onContactClick. 
-        Але він не має кнопки "Контакти". 
-        Ми все одно передамо її, щоб TS не лаявся.
-      */}
-      <Header onContactClick={openContactModal} />
-      <main>{children}</main>
-      
-      {/* Передаємо openContactModal в Footer для відкриття модального вікна */}
-      <Footer onContactClick={openContactModal} /> 
-
+      {children}
+      {/* Ми також показуємо Cookie Modal на сторінках входу */}
       <CookieConsentModal /> 
-      {isContactModalOpen && <ContactModal onClose={closeContactModal} />}
     </>
   );
 }

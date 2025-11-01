@@ -1,31 +1,28 @@
 // src/app/admin/login/page.tsx
 
 "use client";
-import { useState, useEffect, FormEvent } from 'react'; // Імпортуємо FormEvent
+import { useState, useEffect, FormEvent } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import styles from '@/styles/AuthPage.module.scss'; // Використовуємо ті ж стилі
+import styles from '@/styles/AuthPage.module.scss'; //
 
 const AdminLoginPage = () => {
-  // 1. Типізуємо state
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>(''); // Використовуємо 'message' замість 'error'
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
-  // Перевірка, чи користувач вже увійшов
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        router.push('/admin'); // Якщо вже є сесія, редірект на дашборд
+        router.push('/admin'); 
       }
     };
     checkSession();
   }, [router]);
 
-  // 2. Типізуємо обробник форми
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -39,15 +36,16 @@ const AdminLoginPage = () => {
     if (error) {
       setMessage(`Помилка входу: ${error.message}`);
     } else {
-      setMessage('Вхід успішний! Перенаправляємо...');
-      router.push('/admin'); // Редірект на адмін-панель
+      router.push('/admin'); 
     }
     setLoading(false);
   };
 
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ТА СТИЛІВ ▼▼▼ ---
   return (
-    <main className={styles.container}>
-      <div className={styles.formWrapper}>
+    // Використовуємо .authContainer та .authForm з AuthPage.module.scss
+    <main className={styles.authContainer}> 
+      <div className={styles.authForm}>
         <h1>Вхід в Адмін-панель</h1>
         <form onSubmit={handleLogin}>
           <label htmlFor="email">Email</label>
@@ -55,7 +53,7 @@ const AdminLoginPage = () => {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Типізація інлайново
+            onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
           />
@@ -64,14 +62,15 @@ const AdminLoginPage = () => {
             id="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Типізація інлайново
+            onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="current-password"
           />
           <button type="submit" disabled={loading}>
             {loading ? 'Входимо...' : 'Увійти'}
           </button>
-          {message && <p className={styles.message}>{message}</p>}
+          {/* Використовуємо .error для повідомлень про помилку, як у AuthPage.module.scss */}
+          {message && <p className={styles.error}>{message}</p>} 
         </form>
       </div>
     </main>

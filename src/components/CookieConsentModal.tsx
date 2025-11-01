@@ -1,36 +1,44 @@
 // src/components/CookieConsentModal.tsx
-
 "use client";
-// 'useCart' був позначений як непотрібний у .js файлі, тому я його видалив.
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // <-- Імпортуємо useEffect
 import styles from '@/styles/CookieModal.module.scss';
 
-// 1. Визначаємо чіткий тип для можливих значень згоди
 type ConsentType = 'all' | 'necessary' | 'rejected';
 
 const CookieConsentModal = () => {
-    // 2. Явно типізуємо state
-    const [isHidden, setIsHidden] = useState<boolean>(false);
+    // 1. Початковий стан ЗАВЖДИ "сховано"
+    const [isHidden, setIsHidden] = useState<boolean>(true);
+    // 2. Додаємо стан, щоб відстежити, чи це клієнт
+    const [isClient, setIsClient] = useState<boolean>(false);
 
-    // 3. Типізуємо аргумент 'consentType'
+    // 3. Цей ефект виконається ТІЛЬКИ на клієнті
+    useEffect(() => {
+        setIsClient(true); // Тепер ми знаємо, що це клієнт
+        const consent = localStorage.getItem('cookieConsent');
+        if (!consent) {
+            // Якщо згоди НЕМАЄ, показуємо модалку
+            setIsHidden(false); 
+        }
+    }, []); // Порожній масив = виконати один раз при завантаженні
+
     const handleConsent = (consentType: ConsentType) => {
-        // Ми впевнені, що localStorage доступний у "use client"
         localStorage.setItem('cookieConsent', consentType);
         setIsHidden(true);
-        // Ми також впевнені, що 'document' доступний
         document.body.classList.remove('modal-open');
     };
 
-    // Якщо користувач вже натиснув кнопку, не рендеримо нічого
-    if(isHidden) return null;
+    // 4. Якщо ми на сервері (isClient === false) АБО якщо модалка має бути схована - нічого не рендеримо
+    if (!isClient || isHidden) {
+        return null;
+    }
 
+    // Рендеримо модалку, лише якщо це клієнт І згоди ще немає
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
                 <h3>Ваша приватність важлива для нас</h3>
                 <p>Ми використовуємо cookie-файли для покращення вашого досвіду. Ви можете прийняти всі cookie або лише ті, що необхідні для роботи сайту.</p>
                 <div className={styles.cookieBtnGroup}>
-                    {/* Викликаємо handleConsent з валідними типами 'ConsentType' */}
                     <button onClick={() => handleConsent('all')} className={styles.cookieBtn}>Прийняти всі</button>
                     <button onClick={() => handleConsent('necessary')} className={`${styles.cookieBtn} ${styles.secondary}`}>Лише необхідні</button>
                     <button onClick={() => handleConsent('rejected')} className={`${styles.cookieBtn} ${styles.secondary}`}>Відхилити</button>

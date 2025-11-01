@@ -79,7 +79,7 @@
 }
 
 .ctaButton {
-        color: var(--primary-color);
+        
             padding: 15px 40px;
             border-radius: 50px;
             border: 2px solid var(--primary-color);
@@ -146,5 +146,46 @@
     &:hover {
         background-color: var(--primary-color);
         color: var(--background-color);
+    }
+}
+
+
+/* ... (всі ваші існуючі стилі) ... */
+
+/* ▼▼▼ ДОДАЙТЕ ЦІ СТИЛІ В КІНЕЦЬ ФАЙЛУ ▼▼▼ */
+
+.removeButton {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    font-size: 0.9rem; /* Зробимо текст замість іконки */
+    cursor: pointer;
+    padding: 5px;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.summaryActions {
+    display: flex;
+    gap: 15px;
+}
+
+/* Використовуємо .ctaButton, який вже є */
+.checkoutButton {
+    @extend .ctaButton; // Наслідуємо стилі .ctaButton
+}
+
+.clearButton {
+    @extend .ctaButton; // Наслідуємо стилі .ctaButton
+    background-color: transparent; // Робимо вторинною
+    color: var(--text-secondary-color);
+    border-color: var(--text-secondary-color);
+
+    &:hover {
+        background-color: var(--text-secondary-color);
+        color: var(--background-color);
+        border-color: var(--text-secondary-color);
+        box-shadow: none;
     }
 }
