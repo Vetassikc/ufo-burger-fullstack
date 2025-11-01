@@ -1,0 +1,90 @@
+/* src/styles/StickyCart.module.scss */
+
+.stickyCart {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+  }
+}
+
+.icon {
+  font-size: 1.5rem;
+}
+
+.cartCount {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4d4d; // Яскраво-червоний
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  font-family: var(--font-orbitron);
+  font-weight: 700;
+  border: 2px solid var(--background-color);
+
+  /* Анімація пульсації для лічильника */
+  animation: pulse 2s infinite;
+}
+
+/* "Wow" ефект при додаванні товару */
+.animate {
+  animation: bounce 0.3s ease-out;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 77, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
+  }
+}
+
+/* Адаптація для мобільних пристроїв */
+@media (max-width: 768px) {
+  .stickyCart {
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+  }
+  .icon {
+    font-size: 1.3rem;
+  }
+}

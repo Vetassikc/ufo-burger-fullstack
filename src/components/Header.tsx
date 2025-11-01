@@ -2,12 +2,12 @@
 "use client";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '@/styles/Header.module.scss';
-import { useCart } from '@/context/CartContext';
+// useCart більше не потрібен тут
 import { supabase } from '@/lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-import { FaCartShopping, FaUser } from 'react-icons/fa6'; // <-- Потрібен 'npm install react-icons'
+import { FaUser } from 'react-icons/fa6'; // FaCartShopping видалено
 
 type HeaderProps = {
   onContactClick: () => void; 
@@ -16,9 +16,11 @@ type HeaderProps = {
 const Header = ({ onContactClick }: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { totalItems } = useCart();
+  // totalItems більше не потрібен тут
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -34,18 +36,26 @@ const Header = ({ onContactClick }: HeaderProps) => {
       setUser(session?.user ?? null);
     });
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       subscription?.unsubscribe();
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const handleLogout = async () => {
+    setProfileMenuOpen(false); 
     await supabase.auth.signOut();
     router.push('/');
   };
 
-  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ▼▼▼ ---
   const headerClasses = `${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`;
 
   return (
@@ -71,11 +81,28 @@ const Header = ({ onContactClick }: HeaderProps) => {
                   Контакти
                 </button>
               </li>
+              
               {user ? (
-                <>
-                  <li><Link href="/profile" className={pathname === '/profile' ? styles.active : ''}><FaUser /></Link></li>
-                  <li><button onClick={handleLogout} className={styles.authButton}>Вийти</button></li>
-                </>
+                <li 
+                  className={styles.profileMenuContainer}
+                  ref={profileMenuRef} 
+                  onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
+                >
+                  <a className={pathname === '/profile' ? styles.active : ''} style={{cursor: 'pointer'}}>
+                    <FaUser style={{ fontSize: '1.5rem' }} />
+                  </a>
+                  
+                  {isProfileMenuOpen && (
+                    <div className={styles.profileMenu}>
+                      <Link href="/profile" className={styles.profileMenuLink} onClick={() => setProfileMenuOpen(false)}>
+                        Мій Профіль
+                      </Link>
+                      <button onClick={handleLogout} className={styles.profileMenuButton}>
+                        Вийти
+                      </button>
+                    </div>
+                  )}
+                </li>
               ) : (
                 <>
                   <li><Link href="/login" className={styles.authButton}>Увійти</Link></li>
@@ -84,12 +111,9 @@ const Header = ({ onContactClick }: HeaderProps) => {
               )}
             </ul>
           </nav>
-          <Link href="/cart" className={styles.cartIcon}>
-            <FaCartShopping />
-            {totalItems > 0 && (
-              <span className={styles.cartCount}>{totalItems}</span>
-            )}
-          </Link>
+          
+          {/* --- ▼▼▼ ІКОНКА КОШИКА ВИДАЛЕНА ЗВІДСИ ▼▼▼ --- */}
+          
         </div>
       </div>
     </header>

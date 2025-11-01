@@ -159,3 +159,72 @@
     color: var(--background-color);
   }
 }
+
+/* ▼▼▼ ДОДАЙТЕ ЦІ СТИЛІ В КІНЕЦЬ ФАЙЛУ ▼▼▼ */
+
+.profileMenuContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  
+  // Стилізуємо іконку всередині Link
+  a {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem; // Зробимо іконку профілю більшою
+    color: var(--text-color);
+    transition: color 0.3s;
+
+    &:hover,
+    &.active {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.profileMenu {
+  position: absolute;
+  top: 150%; // Трохи нижче хедера
+  right: 0;
+  min-width: 180px;
+  border: 1px solid #2a2a3e;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 1100;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  
+  // "Wow" ефект: Матове скло (Glassmorphism)
+  background-color: rgba(17, 17, 34, 0.85); // Фон як у .scrolled
+  backdrop-filter: blur(10px);
+}
+
+.profileMenuLink,
+.profileMenuButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  font-family: var(--font-montserrat), sans-serif; // Використовуємо основний шрифт
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s;
+
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+  }
+}
+
+.profileMenuButton {
+  color: #ff4d4d; // Червоний для виходу
+  
+  &:hover {
+    background-color: #ff4d4d;
+    color: white;
+  }
+}
