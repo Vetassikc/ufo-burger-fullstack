@@ -1,40 +1,36 @@
 // src/app/admin/page.tsx
-
 "use client";
-import { useEffect, useState, ChangeEvent } from 'react'; // <-- Додано ChangeEvent
+import { useEffect, useState, ChangeEvent } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import styles from '@/styles/AdminPage.module.scss'; //
+import styles from '@/styles/AdminPage.module.scss';
 import type { User } from '@supabase/supabase-js';
 
-// --- Інтерфейси ---
-type OrderStatus = 'new' | 'in_progress' | 'completed' | 'cancelled' | string;
+type OrderStatus = 'new' | 'in_progress' | 'completed' | 'cancelled' | 'succeeded' | string;
 
 interface Order {
   id: number;
   created_at: string;
-  customer_name: string; // <-- Змінено з 'name'
-  customer_phone: string; // <-- Змінено з 'phone'
+  customer_name: string;
+  customer_phone: string;
   delivery_address: string;
   total_price: number;
   status: OrderStatus;
-  order_items: any[]; // Можна уточнити, якщо потрібно
+  order_items: any[]; 
 }
 
-// --- Компонент ---
 const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  // --- ▼▼▼ ЛОГІКА З .js ВЕРСІЇ (З ТИПАМИ) ▼▼▼ ---
   const fetchOrders = async () => {
     const { data: ordersData, error } = await supabase
       .from('orders')
       .select('*')
       .order('created_at', { ascending: false })
-      .returns<Order[]>(); // Типізуємо відповідь
+      .returns<Order[]>();
 
     if (error) console.error('Error fetching orders:', error);
     else if (ordersData) setOrders(ordersData);
@@ -47,7 +43,7 @@ const AdminDashboard = () => {
         setUser(user);
         await fetchOrders();
       } else {
-        router.push('/admin/login'); // Редірект на логін адмінки
+        router.push('/admin/login');
       }
       setLoading(false);
     };
@@ -59,12 +55,10 @@ const AdminDashboard = () => {
     router.push('/'); 
   };
 
-  // Функція оновлення статусу
+  // --- ▼▼▼ ВІДНОВЛЕННЯ ЛОГІКИ ЗМІНИ СТАТУСУ ▼▼▼ ---
   const handleStatusChange = async (orderId: number, newStatus: OrderStatus) => {
-    // 1. Оптимістичне оновлення UI
     setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
 
-    // 2. Запит в БД
     const { error } = await supabase
       .from('orders')
       .update({ status: newStatus })
@@ -73,13 +67,13 @@ const AdminDashboard = () => {
     if (error) {
       console.error('Error updating status:', error);
       alert('Не вдалося оновити статус.');
-      await fetchOrders(); // Повертаємо актуальні дані з БД
+      await fetchOrders(); 
     }
   };
 
   if (loading) return <p className={styles.loading}>Завантаження даних...</p>;
   
-  // --- ▼▼▼ ВИПРАВЛЕНА JSX-СТРУКТУРА (КАРТКИ) ▼▼▼ ---
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ (КАРТКИ ЗАМІСТЬ ТАБЛИЦІ) ▼▼▼ ---
   return (
     <main className={styles.adminContainer}>
       <div className={styles.adminHeader}>
@@ -95,7 +89,6 @@ const AdminDashboard = () => {
               <div key={order.id} className={styles.orderCard}>
                 <div className={styles.orderCardHeader}>
                   <strong>Замовлення #{order.id}</strong>
-                  {/* Випадаючий список для статусу */}
                   <select 
                     className={styles.statusSelect} 
                     value={order.status} 
@@ -114,14 +107,6 @@ const AdminDashboard = () => {
                 <p><strong>Телефон:</strong> {order.customer_phone}</p>
                 <p><strong>Адреса:</strong> {order.delivery_address}</p>
                 <p><strong>Сума:</strong> {order.total_price.toFixed(2)} CHF</p>
-                {/* <div className={styles.orderItems}>
-                  <ul>
-                    {order.order_items.map((item: any) => (
-                      <li key={item.id}>{item.name} x {item.quantity}</li>
-                    ))}
-                  </ul>
-                </div> 
-                */}
                 <p className={styles.orderDate}>
                   {new Date(order.created_at).toLocaleString('de-CH')}
                 </p>

@@ -1,15 +1,14 @@
 // src/app/admin/login/page.tsx
-
 "use client";
 import { useState, useEffect, FormEvent } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
-import styles from '@/styles/AuthPage.module.scss'; //
+import styles from '@/styles/AuthPage.module.scss';
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [message, setMessage] = useState<string>(''); // Використовуємо 'message' замість 'error'
+  const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
@@ -41,9 +40,8 @@ const AdminLoginPage = () => {
     setLoading(false);
   };
 
-  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ТА СТИЛІВ ▼▼▼ ---
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ▼▼▼ ---
   return (
-    // Використовуємо .authContainer та .authForm з AuthPage.module.scss
     <main className={styles.authContainer}> 
       <div className={styles.authForm}>
         <h1>Вхід в Адмін-панель</h1>
@@ -69,7 +67,6 @@ const AdminLoginPage = () => {
           <button type="submit" disabled={loading}>
             {loading ? 'Входимо...' : 'Увійти'}
           </button>
-          {/* Використовуємо .error для повідомлень про помилку, як у AuthPage.module.scss */}
           {message && <p className={styles.error}>{message}</p>} 
         </form>
       </div>

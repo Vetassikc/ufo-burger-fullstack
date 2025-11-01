@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import styles from '@/styles/CartPage.module.scss';
 import { useRouter } from 'next/navigation';
 import type { CartItem } from '@/context/CartContext'; 
-import Image from 'next/image'; // <-- Потрібен для зображень
+import Image from 'next/image';
 
 export default function CartPage() {
   const { 
@@ -22,13 +22,12 @@ export default function CartPage() {
     router.push('/checkout');
   };
 
-  // --- ▼▼▼ ОСЬ ВИПРАВЛЕНА СТРУКТУРА ITEM ▼▼▼ ---
-  // Вона тепер відповідає .cartItem з вашого SCSS
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ТА СТРУКТУРИ ▼▼▼ ---
   const renderCartItem = (item: CartItem) => (
     <div key={item.id} className={styles.cartItem}>
       <div className={styles.itemImage}>
         <Image 
-          src={item.image_url || '/img/ufo-icon.png'} // Додаємо fallback-зображення
+          src={item.image_url || '/img/ufo-icon.png'}
           alt={item.name} 
           width={80} 
           height={80} 
@@ -37,10 +36,8 @@ export default function CartPage() {
       </div>
       <div className={styles.itemDetails}>
         <h4>{item.name}</h4>
-        {/* <p>{item.price.toFixed(2)} CHF</p> (Ціна за одиницю, якщо потрібно) */}
       </div>
       <div className={styles.itemQuantity}>
-        {/* Кнопки +/- тепер будуть стилізовані */}
         <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
         <span>{item.quantity}</span>
         <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
@@ -49,23 +46,19 @@ export default function CartPage() {
         {(item.price * item.quantity).toFixed(2)} CHF
       </div>
       <div className={styles.itemRemove}>
-        {/* Кнопка "Видалити" тепер буде стилізована */}
         <button onClick={() => removeFromCart(item.id)}>
           &times;
         </button>
       </div>
     </div>
   );
-  // --- ▲▲▲ КІНЕЦЬ ВИПРАВЛЕННЯ ITEM ▲▲▲ ---
 
   return (
-    // Використовуємо .cartSection, як ви і виправили
     <main className={styles.cartSection}> 
       <div className={styles.cartContainer}>
         <h1 className={styles.pageTitle}>Ваш Кошик</h1>
         
         {cartItems.length === 0 ? (
-          // --- ▼▼▼ Додаємо блок для порожнього кошика ---
           <div className={styles.emptyCart}>
             <h2>Ваш кошик порожній</h2>
             <p>Схоже, ви ще не додали жодного космічного бургера.</p>
@@ -75,12 +68,10 @@ export default function CartPage() {
           </div>
         ) : (
           <>
-            {/* Використовуємо .cartItems, який є в SCSS */}
             <div className={styles.cartItems}> 
               {cartItems.map(renderCartItem)}
             </div>
             
-            {/* --- ▼▼▼ ВИПРАВЛЕНА СТРУКТУРА SUMMARY ▼▼▼ --- */}
             <div className={styles.cartSummary}>
               <h2>Всього: {totalPrice.toFixed(2)} CHF</h2>
               
@@ -88,7 +79,6 @@ export default function CartPage() {
                 <button 
                   onClick={clearCart} 
                   className={styles.ctaButton} 
-                  // Робимо кнопку "Очистити" вторинною
                   style={{ 
                     backgroundColor: 'transparent', 
                     color: 'var(--text-secondary-color)', 

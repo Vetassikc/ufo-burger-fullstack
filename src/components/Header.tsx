@@ -7,10 +7,8 @@ import styles from '@/styles/Header.module.scss';
 import { useCart } from '@/context/CartContext';
 import { supabase } from '@/lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-// Використовуємо правильні назви іконок
-import { FaCartShopping, FaUser } from 'react-icons/fa6'; 
+import { FaCartShopping, FaUser } from 'react-icons/fa6'; // <-- Правильні іконки
 
-// Описуємо типи для props
 type HeaderProps = {
   onContactClick: () => void; 
 };
@@ -23,19 +21,15 @@ const Header = ({ onContactClick }: HeaderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
-
-    // Отримуємо поточного користувача
+    
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
     };
     getUser();
 
-    // Cлідкуємо за зміною стану аутентифікації
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
@@ -48,10 +42,10 @@ const Header = ({ onContactClick }: HeaderProps) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/'); // Після виходу повертаємо на головну
+    router.push('/');
   };
 
-  // Використовуємо правильні класи з SCSS
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ▼▼▼ ---
   const headerClasses = `${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`;
 
   return (
@@ -72,7 +66,6 @@ const Header = ({ onContactClick }: HeaderProps) => {
         <div className={styles.rightSection}>
           <nav className={`${styles.headerNav} ${styles.rightNav}`}>
             <ul>
-              {/* Кнопка "Контакти", яка використовує пропс */}
               <li>
                 <button onClick={onContactClick} className={styles.contactButton}>
                   Контакти
@@ -92,7 +85,7 @@ const Header = ({ onContactClick }: HeaderProps) => {
             </ul>
           </nav>
           <Link href="/cart" className={styles.cartIcon}>
-            <FaCartShopping /> {/* <-- Використовуємо правильну іконку */}
+            <FaCartShopping />
             {totalItems > 0 && (
               <span className={styles.cartCount}>{totalItems}</span>
             )}

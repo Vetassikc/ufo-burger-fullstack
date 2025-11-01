@@ -1,11 +1,10 @@
 // src/app/login/page.tsx
-
 "use client";
 
-import { useState, FormEvent } from 'react'; // Імпортуємо FormEvent
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import styles from '@/styles/AuthPage.module.scss'; // Використовуємо alias @/
+import styles from '@/styles/AuthPage.module.scss';
 import Link from 'next/link';
 
 const LoginPage = () => {
@@ -15,7 +14,6 @@ const LoginPage = () => {
   const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Типізуємо подію 'e'
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -30,15 +28,15 @@ const LoginPage = () => {
       setMessage(`Помилка входу: ${error.message}`);
     } else {
       setMessage('Вхід виконано успішно! Перенаправляємо...');
-      // Перенаправляємо на сторінку профілю після успішного входу
       router.push('/profile');
     }
     setLoading(false);
   };
 
+  // --- ▼▼▼ ВИПРАВЛЕННЯ КЛАСІВ ▼▼▼ ---
   return (
-    <main className={styles.container}>
-      <div className={styles.formWrapper}>
+    <main className={styles.authContainer}>
+      <div className={styles.authForm}>
         <h1>Вхід</h1>
         <p>Увійдіть у свій акаунт, щоб побачити профіль та історію замовлень.</p>
         <form onSubmit={handleLogin}>
@@ -47,7 +45,7 @@ const LoginPage = () => {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Типізація інлайново
+            onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="example@mail.com"
           />
@@ -57,7 +55,7 @@ const LoginPage = () => {
             id="password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Типізація інлайново
+            onChange={(e) => setPassword(e.target.value)}
             required
             placeholder="Ваш пароль"
           />
@@ -66,16 +64,11 @@ const LoginPage = () => {
             {loading ? 'Входимо...' : 'Увійти'}
           </button>
           
-          {message && <p className={styles.message}>{message}</p>}
+          {message && <p className={styles.error}>{message}</p>}
         </form>
         <div className={styles.links}>
           <p>
             Немає акаунту? <Link href="/register">Зареєструватися</Link>
-          </p>
-          <p>
-            Забули пароль? {/* Посилання на відновлення паролю (якщо буде) */}
-            <Link href="/reset-password">Відновити пароль</Link> 
-            {/* Припустимо, що така сторінка є або буде */}
           </p>
         </div>
       </div>
