@@ -1,18 +1,35 @@
 // src/components/AboutSection.tsx
-"use client"; // <-- ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
+"use client"; 
 import Image from 'next/image';
 import styles from '@/styles/AboutSection.module.scss';
-import AnimatedSection from './AnimatedSection'; // <-- 1. Імпортуємо
+import { motion, Variants } from 'framer-motion';
+
+// Визначаємо варіанти анімації
+const sectionVariants: Variants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut" // <-- ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
+    }
+  }
+};
 
 const AboutSection = () => {
   return (
-    // 2. Замінюємо <section> на <AnimatedSection>
-    <AnimatedSection className={styles.aboutSection}> 
+    <motion.section 
+      className={styles.aboutSection}
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.25 }}
+    > 
       <div className={styles.aboutContainer}>
         <div className={styles.imageWrapper}>
-          {/* 3. Використовуємо реальне зображення з public/img */}
           <Image 
-            src="/img/Depth 5, Frame 0.jpg"
+            src="/img/Depth 5, Frame 0.jpg" 
             alt="UFO Burger Truck" 
             width={600} 
             height={450} 
@@ -22,14 +39,14 @@ const AboutSection = () => {
         <div className={styles.textWrapper}>
           <h2 className={styles.title}>НАША КОСМІЧНА МІСІЯ</h2>
           <p>
-            UFO Burger — це більше, ніж просто бургери. Це концепція, що поєднує футуристичний смак та соціальну відповідальність. Ми використовуємо свіжі інгредієнти від локальних швейцарських постачальників, щоб гарантувати найвищу якість.
+            UFO Burger — це більше, ніж просто бургери. Це концепція...
           </p>
           <p>
-            Наша головна місія — підтримка українських біженців через працевлаштування та допомога в інтеграції. Кожен ваш бургер — це внесок у цю важливу справу.
+            Наша головна місія — підтримка українських біженців...
           </p>
         </div>
       </div>
-    </AnimatedSection> // 2. Закриваємо AnimatedSection
+    </motion.section>
   );
 };
 

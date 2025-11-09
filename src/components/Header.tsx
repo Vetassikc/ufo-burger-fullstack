@@ -1,13 +1,14 @@
-// src/components/Header.tsx/
+// src/components/Header.tsx
 "use client";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import styles from '@/styles/Header.module.scss';
-// useCart більше не потрібен тут
+import { useCart } from '@/context/CartContext';
 import { supabase } from '@/lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-import { FaUser } from 'react-icons/fa6'; // FaCartShopping видалено
+import { FaCartShopping, FaUser } from 'react-icons/fa6'; 
+import { motion } from 'framer-motion'; // <-- 1. Імпортуємо motion
 
 type HeaderProps = {
   onContactClick: () => void; 
@@ -16,13 +17,14 @@ type HeaderProps = {
 const Header = ({ onContactClick }: HeaderProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  // totalItems більше не потрібен тут
+  const { totalItems } = useCart();
   const [isScrolled, setIsScrolled] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
   const profileMenuRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
+    // ... (вся логіка useEffect залишається без змін) ...
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     
@@ -59,13 +61,21 @@ const Header = ({ onContactClick }: HeaderProps) => {
   const headerClasses = `${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`;
 
   return (
+    // 2. Прибираємо анімацію .variants з <header>
     <header className={headerClasses}>
       <div className={styles.headerContainer}>
         <nav className={`${styles.headerNav} ${styles.leftNav}`}>
           <ul>
-            <li><Link href="/" className={pathname === '/' ? styles.active : ''}>Головна</Link></li>
-            <li><Link href="/menu" className={pathname === '/menu' ? styles.active : ''}>Меню</Link></li>
-            <li><Link href="/gallery" className={pathname === '/gallery' ? styles.active : ''}>Галерея</Link></li>
+            {/* 3. Прибираємо 'motion.li' для стабільності */}
+            <li>
+              <Link href="/" className={pathname === '/' ? styles.active : ''}>Головна</Link>
+            </li>
+            <li>
+              <Link href="/menu" className={pathname === '/menu' ? styles.active : ''}>Меню</Link>
+            </li>
+            <li>
+              <Link href="/gallery" className={pathname === '/gallery' ? styles.active : ''}>Галерея</Link>
+            </li>
           </ul>
         </nav>
 
@@ -83,6 +93,7 @@ const Header = ({ onContactClick }: HeaderProps) => {
               </li>
               
               {user ? (
+                // 4. Кнопка профілю тепер завжди видима
                 <li 
                   className={styles.profileMenuContainer}
                   ref={profileMenuRef} 
@@ -93,14 +104,20 @@ const Header = ({ onContactClick }: HeaderProps) => {
                   </a>
                   
                   {isProfileMenuOpen && (
-                    <div className={styles.profileMenu}>
+                    // 5. Анімуємо ТІЛЬКИ випадаюче меню
+                    <motion.div 
+                      className={styles.profileMenu}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <Link href="/profile" className={styles.profileMenuLink} onClick={() => setProfileMenuOpen(false)}>
                         Мій Профіль
                       </Link>
                       <button onClick={handleLogout} className={styles.profileMenuButton}>
                         Вийти
                       </button>
-                    </div>
+                    </motion.div>
                   )}
                 </li>
               ) : (
@@ -111,9 +128,6 @@ const Header = ({ onContactClick }: HeaderProps) => {
               )}
             </ul>
           </nav>
-          
-          {/* --- ▼▼▼ ІКОНКА КОШИКА ВИДАЛЕНА ЗВІДСИ ▼▼▼ --- */}
-          
         </div>
       </div>
     </header>
