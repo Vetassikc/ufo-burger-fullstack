@@ -37,9 +37,12 @@
     }
 }
 
-.cardImagePlaceholder {
-    height: 200px;
-    background-color: #2a2a3e;
+/* Замініть .cardImagePlaceholder на це: */
+.cardImage {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background-color: #2a2a3e; // Фоновий колір, поки вантажиться фото
 }
 
 .cardTitle {

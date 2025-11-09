@@ -1,5 +1,5 @@
 // src/components/AboutSection.tsx
-
+"use client"; // <-- ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
 import Image from 'next/image';
 import styles from '@/styles/AboutSection.module.scss';
 import AnimatedSection from './AnimatedSection'; // <-- 1. Імпортуємо
@@ -10,8 +10,9 @@ const AboutSection = () => {
     <AnimatedSection className={styles.aboutSection}> 
       <div className={styles.aboutContainer}>
         <div className={styles.imageWrapper}>
+          {/* 3. Використовуємо реальне зображення з public/img */}
           <Image 
-            src="/img/Depth 5, Frame 0.jpg" // <-- 3. Додаємо реальне зображення
+            src="/img/Depth 5, Frame 0.jpg"
             alt="UFO Burger Truck" 
             width={600} 
             height={450} 

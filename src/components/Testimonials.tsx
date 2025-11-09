@@ -1,5 +1,5 @@
 // src/components/Testimonials.tsx
-
+"use client"; // <-- ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
 import styles from '@/styles/Testimonials.module.scss';
 import AnimatedSection from './AnimatedSection'; // <-- 1. Імпортуємо
 

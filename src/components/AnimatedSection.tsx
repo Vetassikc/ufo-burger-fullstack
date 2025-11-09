@@ -1,5 +1,5 @@
 // src/components/AnimatedSection.tsx
-"use client";
+"use client"; // <-- ▼▼▼ ОСЬ ВИПРАВЛЕННЯ ▼▼▼
 
 import { motion, Variants } from 'framer-motion';
 import React from 'react';
@@ -23,7 +23,7 @@ const sectionVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.8,
-      ease: "easeOut"
+      ease: [0.6, 0.01, -0.05, 0.95] // Плавний ease
     }
   }
 };
@@ -35,7 +35,7 @@ const AnimatedSection = ({ children, className }: AnimatedSectionProps) => {
       variants={sectionVariants}
       initial="hidden"       // Починаємо як "hidden"
       whileInView="visible"  // Анімуємо до "visible" коли елемент потрапляє в зону видимості
-      viewport={{ once: true, amount: 0.3 }} // Анімація спрацює 1 раз, коли 30% секції видно
+      viewport={{ once: true, amount: 0.25 }} // Анімація спрацює 1 раз, коли 25% секції видно
     >
       {children}
     </motion.section>
