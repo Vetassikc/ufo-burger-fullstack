@@ -34,6 +34,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
+    perspective: 1000px;
 }
 
 /* Використовуємо ті ж стилі карток, що й на головній */
