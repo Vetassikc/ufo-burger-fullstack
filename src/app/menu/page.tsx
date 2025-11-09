@@ -5,10 +5,11 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import styles from '@/styles/MenuPage.module.scss';
 import { useCart } from '@/context/CartContext';
-import { useState, useEffect, MouseEvent } from 'react'; // <-- 1. Імпортуємо MouseEvent
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'; // <-- 2. Імпортуємо хуки
+import { useState, useEffect, MouseEvent } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import MenuCardSkeleton from '@/components/MenuCardSkeleton'; // <-- ІМПОРТ СКЕЛЕТОНУ
 
-// 3. Визначаємо тип для елемента меню
+// 1. Інтерфейс для елемента меню
 interface MenuItem {
   id: number;
   created_at: string;
@@ -19,25 +20,21 @@ interface MenuItem {
   category: string;
 }
 
-// --- ▼▼▼ 4. НОВИЙ КОМПОНЕНТ ДЛЯ 3D-КАРТКИ ▼▼▼ ---
+// 2. Компонент 3D-картки
+// (Він був у вашому оригінальному файлі, але я включу його сюди для повноти)
 const AnimatedMenuCard = ({ item, handleAddToCart }: { item: MenuItem, handleAddToCart: (item: MenuItem) => void }) => {
-  // Хуки для відстеження позиції миші
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Створюємо "пружинні" (spring) значення, щоб рух був плавним
   const springConfig = { stiffness: 150, damping: 20 };
   const smoothMouseX = useSpring(mouseX, springConfig);
   const smoothMouseY = useSpring(mouseY, springConfig);
 
-  // Трансформуємо позицію миші у значення нахилу (rotate)
-  // Чим далі миша від центру (0), тим сильніший нахил (до +/- 10 градусів)
   const rotateX = useTransform(smoothMouseY, [-0.5, 0.5], [10, -10]);
   const rotateY = useTransform(smoothMouseX, [-0.5, 0.5], [-10, 10]);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    // Нормалізуємо позицію миші: від -0.5 до 0.5
     const x = (e.clientX - left) / width - 0.5;
     const y = (e.clientY - top) / height - 0.5;
     mouseX.set(x);
@@ -45,7 +42,6 @@ const AnimatedMenuCard = ({ item, handleAddToCart }: { item: MenuItem, handleAdd
   };
 
   const handleMouseLeave = () => {
-    // Повертаємо картку у вихідне положення
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -54,24 +50,24 @@ const AnimatedMenuCard = ({ item, handleAddToCart }: { item: MenuItem, handleAdd
     <motion.div
       className={styles.card}
       style={{
-        rotateX, // Прив'язуємо 3D-нахил
+        rotateX,
         rotateY,
-        transformStyle: 'preserve-3d', // Вмикаємо 3D-простір
+        transformStyle: 'preserve-3d',
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      whileHover={{ scale: 1.03 }} // Легке збільшення при наведенні
+      whileHover={{ scale: 1.03 }}
       transition={{ type: 'spring', stiffness: 300, damping: 10 }}
     >
-      {/* Додаємо внутрішній елемент, щоб 3D-ефект був кращим */}
-      <div style={{ transform: 'translateZ(20px)' }}> 
+      <div style={{ transform: 'translateZ(20px)' }}>
         {item.image_url ? (
           <div className={styles.cardImage}>
-            <Image 
-              src={item.image_url} 
-              alt={item.name} 
-              fill // Використовуємо fill замість layout
-              objectFit="cover" 
+            <Image
+              src={item.image_url}
+              alt={item.name}
+              fill
+              // @ts-ignore
+              objectFit="cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           </div>
@@ -83,8 +79,8 @@ const AnimatedMenuCard = ({ item, handleAddToCart }: { item: MenuItem, handleAdd
           <p className={styles.cardDescription}>{item.description}</p>
           <div className={styles.cardFooter}>
             <p className={styles.cardPrice}>{item.price.toFixed(2)} CHF</p>
-            <button 
-              className={styles.addToCartBtn} 
+            <button
+              className={styles.addToCartBtn}
               onClick={() => handleAddToCart(item)}
             >
               В кошик
@@ -95,14 +91,13 @@ const AnimatedMenuCard = ({ item, handleAddToCart }: { item: MenuItem, handleAdd
     </motion.div>
   );
 };
-// --- ▲▲▲ КІНЕЦЬ КОМПОНЕНТА КАРТКИ ▲▲▲ ---
 
-
+// 3. Основний компонент сторінки
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -116,20 +111,24 @@ export default function MenuPage() {
 
       if (error) {
         setError(error.message);
+        setIsLoading(false); // Зупиняємо завантаження при помилці
       } else {
-        setMenuItems(data);
+        // (Штучна затримка для демонстрації скелетону)
+        // У робочій версії '1000' можна замінити на '0' або прибрати setTimeout
+        setTimeout(() => {
+          setMenuItems(data);
+          setIsLoading(false);
+        }, 1000); 
       }
-      setIsLoading(false);
     };
     fetchMenu();
   }, []);
 
-  // 5. Функція для додавання в кошик
   const handleAddToCart = (item: MenuItem) => {
-    addToCart({ 
-      ...item, 
-      id: item.id.toString(), // Контекст очікує id як string
-      quantity: 1 
+    addToCart({
+      ...item,
+      id: item.id.toString(),
+      quantity: 1
     });
   };
 
@@ -137,36 +136,66 @@ export default function MenuPage() {
   const smashBurgers = menuItems.filter(item => item.category === 'smash');
   const sides = menuItems.filter(item => item.category === 'side');
 
-  // 6. Функція рендерингу (тепер використовує AnimatedMenuCard)
   const renderCard = (item: MenuItem) => (
-    <AnimatedMenuCard 
-      key={item.id} 
-      item={item} 
-      handleAddToCart={handleAddToCart} 
+    <AnimatedMenuCard
+      key={item.id}
+      item={item}
+      handleAddToCart={handleAddToCart}
     />
   );
 
+  // Функція рендерингу контенту (з логікою скелетону)
   const renderContent = () => {
-    if (isLoading) return <p className={styles.loadingText}>Завантажуємо меню...</p>;
+    if (isLoading) {
+      return (
+        <>
+          <h2 className={styles.categoryTitle}>UFO-Бургери</h2>
+          <div className={styles.grid}>
+            {[...Array(3)].map((_, i) => <MenuCardSkeleton key={`ufo-skel-${i}`} />)}
+          </div>
+          <h2 className={styles.categoryTitle}>Смашбургери</h2>
+          <div className={styles.grid}>
+            {[...Array(3)].map((_, i) => <MenuCardSkeleton key={`smash-skel-${i}`} />)}
+          </div>
+          <h2 className={styles.categoryTitle}>Додатки та напої</h2>
+            <div className={styles.grid}>
+            {[...Array(3)].map((_, i) => <MenuCardSkeleton key={`side-skel-${i}`} />)}
+          </div>
+        </>
+      );
+    }
+
     if (error) return <p className={styles.errorText}>Не вдалося завантажити меню: {error}</p>;
-    if (menuItems.length === 0) return <p className={styles.loadingText}>Меню порожнє. Скоро ми щось додамо!</p>;
+    if (menuItems.length === 0 && !isLoading) return <p className={styles.loadingText}>Меню порожнє. Скоро ми щось додамо!</p>;
 
     return (
       <>
-        <h2 className={styles.categoryTitle}>UFO-Бургери</h2>
-        <div className={styles.grid}>
-          {ufoBurgers.map(renderCard)}
-        </div>
+        {ufoBurgers.length > 0 && (
+          <>
+            <h2 className={styles.categoryTitle}>UFO-Бургери</h2>
+            <div className={styles.grid}>
+              {ufoBurgers.map(renderCard)}
+            </div>
+          </>
+        )}
 
-        <h2 className={styles.categoryTitle}>Смашбургери</h2>
-        <div className={styles.grid}>
-          {smashBurgers.map(renderCard)}
-        </div>
-
-        <h2 className={styles.categoryTitle}>Додатки та напої</h2>
-        <div className={styles.grid}>
-          {sides.map(renderCard)}
-        </div>
+        {smashBurgers.length > 0 && (
+          <>
+            <h2 className={styles.categoryTitle}>Смашбургери</h2>
+            <div className={styles.grid}>
+              {smashBurgers.map(renderCard)}
+            </div>
+          </>
+        )}
+        
+        {sides.length > 0 && (
+          <>
+            <h2 className={styles.categoryTitle}>Додатки та напої</h2>
+            <div className={styles.grid}>
+              {sides.map(renderCard)}
+            </div>
+          </>
+        )}
       </>
     );
   };

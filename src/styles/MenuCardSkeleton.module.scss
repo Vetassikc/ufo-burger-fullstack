@@ -1,0 +1,74 @@
+.card {
+  background-color: #111122;
+  border-radius: 15px;
+  border: 1px solid #2a2a3e;
+  overflow: hidden;
+}
+
+.placeholder {
+  height: 200px;
+  background-color: #2a2a3e;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.content {
+  padding: 20px;
+}
+
+.title {
+  height: 24px;
+  width: 70%;
+  background-color: #2a2a3e;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.description {
+  height: 16px;
+  width: 100%;
+  background-color: #2a2a3e;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.descriptionHalf {
+  height: 16px;
+  width: 50%;
+  background-color: #2a2a3e;
+  border-radius: 4px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.price {
+  height: 20px;
+  width: 60px;
+  background-color: #2a2a3e;
+  border-radius: 4px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.button {
+  height: 40px;
+  width: 100px;
+  background-color: #2a2a3e;
+  border-radius: 8px;
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
