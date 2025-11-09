@@ -2,14 +2,21 @@
 
 import Image from 'next/image';
 import styles from '@/styles/AboutSection.module.scss';
+import AnimatedSection from './AnimatedSection'; // <-- 1. Імпортуємо
 
 const AboutSection = () => {
   return (
-    <section className={styles.aboutSection}>
+    // 2. Замінюємо <section> на <AnimatedSection>
+    <AnimatedSection className={styles.aboutSection}> 
       <div className={styles.aboutContainer}>
         <div className={styles.imageWrapper}>
-          {/* <Image src="/img/about-burger.jpg" alt="UFO Burger Story" width={500} height={500} layout="responsive" /> */}
-          <div className={styles.imagePlaceholder}></div>
+          <Image 
+            src="/img/Depth 5, Frame 0.jpg" // <-- 3. Додаємо реальне зображення
+            alt="UFO Burger Truck" 
+            width={600} 
+            height={450} 
+            style={{ width: '100%', height: 'auto', borderRadius: '15px' }}
+          />
         </div>
         <div className={styles.textWrapper}>
           <h2 className={styles.title}>НАША КОСМІЧНА МІСІЯ</h2>
@@ -21,7 +28,7 @@ const AboutSection = () => {
           </p>
         </div>
       </div>
-    </section>
+    </AnimatedSection> // 2. Закриваємо AnimatedSection
   );
 };
 
